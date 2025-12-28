@@ -1,6 +1,7 @@
 "use server";
-import supabase from "@/client";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { createClient } from "@/supabase/server";
+import { revalidateTag } from "next/cache";
+import { cache } from "react";
 import { checkProductionClosed } from "./productions";
 import { revalidateAllPaths } from "./revalidate";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ interface CreateExpense {
 
 export const createExpense = async (payload: CreateExpense) => {
   try {
+    const supabase = await createClient();
     const { data: expenseData, error } = await supabase
       .from("expenses")
       .insert({
@@ -51,6 +53,7 @@ export const updateExpense = async (
   payload: Partial<CreateExpense>
 ) => {
   try {
+    const supabase = await createClient();
     // First, get the expense to check its production_id
     const { data: existingExpense, error: fetchError } = await supabase
       .from("expenses")
@@ -96,6 +99,7 @@ export const updateExpense = async (
 
 export const deleteExpense = async (expenseId: string) => {
   try {
+    const supabase = await createClient();
     // First, get the expense to check its production_id
     const { data: existingExpense, error: fetchError } = await supabase
       .from("expenses")
@@ -138,9 +142,10 @@ export const deleteExpense = async (expenseId: string) => {
   }
 };
 
-export const getExpensesByProdId = unstable_cache(
+export const getExpensesByProdId = cache(
   async (productionId: string): Promise<Expense[]> => {
     try {
+      const supabase = await createClient();
       const { data: expenses, error } = await supabase
         .from("expenses")
         .select("*")
@@ -157,10 +162,5 @@ export const getExpensesByProdId = unstable_cache(
       console.error("Unexpected error in getExpensesByProdId:", error);
       return [];
     }
-  },
-  [],
-  {
-    tags: ["expenses"],
-    revalidate: 300,
   }
 );

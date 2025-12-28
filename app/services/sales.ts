@@ -1,9 +1,9 @@
 "use server";
 
-import supabase from "@/client";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { createClient } from "@/supabase/server";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { cache } from "react";
 import { revalidateAllPaths } from "./revalidate";
-import { toast } from "sonner";
 
 interface CreateSale {
   customer_id: string;
@@ -90,6 +90,7 @@ export const fetchFilteredSales = async (
   const offset = (page - 1) * limit;
 
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase.rpc("fetch_sales_paginated", {
       p_limit: limit,
       p_offset: offset,
@@ -112,6 +113,7 @@ export const fetchFilteredSales = async (
 export const fetchAllSales = async (page: number, limit: number) => {
   const offset = page * limit;
   try {
+    const supabase = await createClient();
     const { data: sales, error } = await supabase
       .from("sales")
       .select("*")
@@ -128,14 +130,14 @@ export const fetchAllSales = async (page: number, limit: number) => {
   }
 };
 
-export const fetchAllSalesWithDetails = unstable_cache(
-  async (page: number, limit: number) => {
-    const offset = (page - 1) * limit;
-    try {
-      const { data: sales, error } = await supabase
-        .from("sales")
-        .select(
-          `
+export const fetchAllSalesWithDetails = async (page: number, limit: number) => {
+  const offset = (page - 1) * limit;
+  try {
+    const supabase = await createClient();
+    const { data: sales, error } = await supabase
+      .from("sales")
+      .select(
+        `
         id,
         amount,
         paid,
@@ -155,30 +157,25 @@ export const fetchAllSalesWithDetails = unstable_cache(
           created_at
         )
       `
-        )
-        .order("created_at", { ascending: false })
-        .range(offset, offset + limit - 1);
+      )
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
-      if (error) {
-        console.error("Error fetching sales with details:", error);
-        return [];
-      }
-
-      return (sales as unknown as SaleWithDetails[]) || [];
-    } catch (error) {
-      console.error("Unexpected error in fetchAllSalesWithDetails:", error);
+    if (error) {
+      console.error("Error fetching sales with details:", error);
       return [];
     }
-  },
-  [],
-  {
-    tags: ["sales"],
-    revalidate: 300,
+
+    return (sales as unknown as SaleWithDetails[]) || [];
+  } catch (error) {
+    console.error("Unexpected error in fetchAllSalesWithDetails:", error);
+    return [];
   }
-);
+};
 
 export const fetchSalesByCustomerId = async (customerId: string) => {
   try {
+    const supabase = await createClient();
     const { data: sales, error } = await supabase
       .from("sales")
       .select("*")
@@ -199,6 +196,7 @@ export const fetchSalesByCustomerId = async (customerId: string) => {
 
 export const fetchSaleById = async (saleId: string) => {
   try {
+    const supabase = await createClient();
     const { data: sale, error } = await supabase
       .from("sales")
       .select("*")
@@ -216,40 +214,34 @@ export const fetchSaleById = async (saleId: string) => {
   }
 };
 
-export const fetchSalesByProductionId = unstable_cache(
-  async (productionId: string) => {
-    try {
-      const { data: sales, error } = await supabase
-        .from("sales")
-        .select(
-          `
+export const fetchSalesByProductionId = cache(async (productionId: string) => {
+  try {
+    const supabase = await createClient();
+    const { data: sales, error } = await supabase
+      .from("sales")
+      .select(
+        `
         *,
         customers!customer_id (
           id,
           name
         )
       `
-        )
-        .eq("production_id", productionId)
-        .order("created_at", { ascending: false });
+      )
+      .eq("production_id", productionId)
+      .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching sales with customer:", error);
-        return [];
-      }
-
-      return (sales as unknown as SaleWithCustomer[]) || [];
-    } catch (error) {
-      console.error("Unexpected error in fetchSalesByProductionId:", error);
+    if (error) {
+      console.error("Error fetching sales with customer:", error);
       return [];
     }
-  },
-  [],
-  {
-    tags: ["salesByProd"],
-    revalidate: 300,
+
+    return (sales as unknown as SaleWithCustomer[]) || [];
+  } catch (error) {
+    console.error("Unexpected error in fetchSalesByProductionId:", error);
+    return [];
   }
-);
+});
 
 /**
  * Atomic sale creation with payment and inventory update
@@ -259,6 +251,7 @@ export const createSaleWithPaymentAndInventory = async (
   payload: CreateSale
 ) => {
   try {
+    const supabase = await createClient();
     // Call atomic RPC function
     const { data, error } = await supabase.rpc(
       "create_sale_with_payment_and_inventory",
@@ -300,6 +293,7 @@ export const createSaleWithPaymentAndInventory = async (
  */
 export const createNewSale = async (payload: CreateSale) => {
   try {
+    const supabase = await createClient();
     // 1. Create the sale record
     const { data: saleData, error } = await supabase
       .from("sales")
@@ -333,6 +327,7 @@ export const createNewSale = async (payload: CreateSale) => {
 
 export const getUnpaidSalesByCustomerId = async (customerId: string) => {
   try {
+    const supabase = await createClient();
     const { data: unpaidSales, error } = await supabase
       .from("sales")
       .select("*")
@@ -352,6 +347,7 @@ export const getUnpaidSalesByCustomerId = async (customerId: string) => {
 
 export const updateSale = async (saleId: string, payload: Partial<Sale>) => {
   try {
+    const supabase = await createClient();
     // Call atomic RPC function
     const { data, error } = await supabase.rpc("update_sale_atomic", {
       p_sale_id: saleId,
@@ -388,6 +384,7 @@ export const updateSale = async (saleId: string, payload: Partial<Sale>) => {
 
 export const deleteSale = async (saleId: string) => {
   try {
+    const supabase = await createClient();
     // Call atomic RPC function
     const { error } = await supabase.rpc("delete_sale_atomic", {
       p_sale_id: saleId,

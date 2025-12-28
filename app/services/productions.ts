@@ -1,7 +1,8 @@
 "use server";
-import supabase from "@/client";
+import { createClient } from "@/supabase/server";
 import { revalidateAllPaths } from "./revalidate";
-import { revalidatePath, unstable_cache, updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { cache } from "react";
 import { getBreadPriceMultipliers } from "./bread_price";
 import { toast } from "sonner";
 import { isSuperAdmin } from "./roles";
@@ -67,6 +68,7 @@ export const createProduction = async (payload: Create) => {
       sold_bread[key] = 0;
     });
 
+    const supabase = await createClient();
     const { data: ProductionData, error } = await supabase
       .from("productions")
       .insert({
@@ -96,50 +98,55 @@ export const createProduction = async (payload: Create) => {
   }
 };
 
-export const getLatestProduction = unstable_cache(
-  async () => {
-    try {
-      const { data: lastProduction } = await supabase
-        .from("productions")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(1);
+export const getLatestProduction = cache(async () => {
+  try {
+    const supabase = await createClient();
+    const { data: lastProduction, error } = await supabase
+      .from("productions")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1);
 
-      if (lastProduction) {
-        return lastProduction[0];
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.log("getLatestProduction Error>>>>>>>", error);
-      throw new Error(String(error));
+    if (error) {
+      console.error("GET_LATEST_PRODUCTION_QUERY_ERROR:", error);
+      throw error;
     }
-  },
-  [],
-  { tags: ["latestProd"], revalidate: 300 }
-);
 
-export const getLast10Productions = unstable_cache(
-  async () => {
-    try {
-      const { data: last10 } = await supabase
-        .from("productions")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      return last10;
-    } catch (error) {
-      console.log("getLast10 Error>>>>>>>", error);
-      throw new Error(String(error));
+    if (lastProduction && lastProduction.length > 0) {
+      return lastProduction[0];
+    } else {
+      return null;
     }
-  },
-  [],
-  { tags: ["last10"], revalidate: 300 }
-);
+  } catch (error) {
+    console.error("getLatestProduction Error>>>>>>>", error);
+    throw new Error(String(error));
+  }
+});
+
+export const getLast10Productions = cache(async () => {
+  try {
+    const supabase = await createClient();
+    const { data: last10, error } = await supabase
+      .from("productions")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(10);
+
+    if (error) {
+      console.error("GET_LAST_10_PRODUCTIONS_ERROR:", error);
+      throw error;
+    }
+
+    return last10;
+  } catch (error) {
+    console.error("getLast10 Error>>>>>>>", error);
+    throw new Error(String(error));
+  }
+});
 
 export const getProductionById = async (id: string) => {
   try {
+    const supabase = await createClient();
     const { data: production, error } = await supabase
       .from("productions")
       .select("*")
@@ -197,9 +204,10 @@ export const checkProductionClosed = async (
   }
 };
 
-export const fetchAllProductions = unstable_cache(
+export const fetchAllProductions = cache(
   async (): Promise<Production[] | []> => {
     try {
+      const supabase = await createClient();
       const { data: productions, error } = await supabase
         .from("productions")
         .select("*")
@@ -215,13 +223,12 @@ export const fetchAllProductions = unstable_cache(
       console.error("Unexpected error in fetchAllProductions:", error);
       return [];
     }
-  },
-  [],
-  { tags: ["productions"], revalidate: 300 }
+  }
 );
 
 export const getProductionOutstanding = async (productionId: string) => {
   try {
+    const supabase = await createClient();
     const { data: outstanding, error } = await supabase
       .from("sales")
       .select(
@@ -262,6 +269,7 @@ export const getProductionOutstanding = async (productionId: string) => {
 
 export const getProductionPaidOutstanding = async (productionId: string) => {
   try {
+    const supabase = await createClient();
     const { data: payments, error } = await supabase
       .from("payments")
       .select(
@@ -308,6 +316,7 @@ export const toggleProdStatus = async (productionId: string) => {
     }
 
     // Call atomic RPC function
+    const supabase = await createClient();
     const { data, error } = await supabase.rpc(
       "toggle_production_status_atomic",
       {
@@ -348,6 +357,7 @@ export const updateProduction = async (
       throw new Error(`Production cannot be updated because it is closed`);
     }
 
+    const supabase = await createClient();
     const { data: updatedProduction, error } = await supabase
       .from("productions")
       .update(payload)
@@ -431,6 +441,7 @@ export const deleteProduction = async (productionId: string) => {
       throw new Error(`Production cannot be deleted because it is closed`);
     }
 
+    const supabase = await createClient();
     const { error } = await supabase
       .from("productions")
       .delete()

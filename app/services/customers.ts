@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import supabase from "@/client";
+import { createClient } from "@/supabase/server";
 import { toast } from "sonner";
-import {
-  unstable_cache,
-  updateTag,
-  revalidatePath,
-  revalidateTag,
-} from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { cache } from "react";
 import { revalidateAllPaths } from "./revalidate";
 export interface Customer {
   id: string;
@@ -32,52 +28,44 @@ interface Create {
   debtAmount?: string;
 }
 
-export const fetchAllCustomers = unstable_cache(
-  async (): Promise<Customer[] | []> => {
-    try {
-      const { data: customers, error } = await supabase
-        .from("customers")
-        .select("*")
-        .order("created_at", { ascending: false });
+export const fetchAllCustomers = cache(async (): Promise<Customer[] | []> => {
+  try {
+    const supabase = await createClient();
+    const { data: customers, error } = await supabase
+      .from("customers")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching customers:", error);
-        return [];
-      }
-
-      return customers;
-    } catch (error) {
-      console.error("Unexpected error in fetchAllCustomers:", error);
+    if (error) {
+      console.error("Error fetching customers:", error);
       return [];
     }
-  },
-  [],
-  { tags: ["customers"], revalidate: 300 }
-);
 
-export const getCustomerCount = unstable_cache(
-  async () => {
-    try {
-      const { count, error } = await supabase
-        .from("customers")
-        .select("*", { count: "exact", head: true });
-      if (error) {
-        throw error;
-      }
-      return count;
-    } catch (error) {
-      console.error("getCustomerCount Error>>>>>", error);
-    }
-  },
-  [],
-  {
-    tags: ["customers_count"],
-    revalidate: 300,
+    return customers;
+  } catch (error) {
+    console.error("Unexpected error in fetchAllCustomers:", error);
+    return [];
   }
-);
+});
+
+export const getCustomerCount = async () => {
+  try {
+    const supabase = await createClient();
+    const { count, error } = await supabase
+      .from("customers")
+      .select("*", { count: "exact", head: true });
+    if (error) {
+      throw error;
+    }
+    return count;
+  } catch (error) {
+    console.error("getCustomerCount Error>>>>>", error);
+  }
+};
 
 export const fetchCustomerById = async (id: string) => {
   try {
+    const supabase = await createClient();
     const { data: customer, error } = await supabase
       .from("customers")
       .select("*")
@@ -98,6 +86,7 @@ export const fetchCustomerById = async (id: string) => {
 
 export const fetchCustomerTotalSpent = async (customerId: string) => {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase.rpc(
       "calculate_customer_total_spent",
       {
@@ -114,35 +103,30 @@ export const fetchCustomerTotalSpent = async (customerId: string) => {
   }
 };
 
-export const fetchCustomerMonthlyPurchases = unstable_cache(
-  async (customerId: string) => {
-    try {
-      const { data, error } = await supabase.rpc(
-        "get_customer_monthly_purchases",
-        {
-          p_customer_id: customerId,
-        }
-      );
-
-      if (error) {
-        throw error;
+export const fetchCustomerMonthlyPurchases = async (customerId: string) => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc(
+      "get_customer_monthly_purchases",
+      {
+        p_customer_id: customerId,
       }
+    );
 
-      return data || [];
-    } catch (error) {
-      console.error("Error fetching customer monthly purchases:", error);
-      return [];
+    if (error) {
+      throw error;
     }
-  },
-  ["customer_purchases"],
-  {
-    tags: ["customer_purchases"],
-    revalidate: 300,
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching customer monthly purchases:", error);
+    return [];
   }
-);
+};
 
 export const createCustomer = async (payload: Create) => {
   try {
+    const supabase = await createClient();
     const { data: customerData, error } = await supabase
       .from("customers")
       .insert({
@@ -156,8 +140,8 @@ export const createCustomer = async (payload: Create) => {
       throw new Error(error.message);
     }
     revalidatePath("customers/all");
-    updateTag("customers");
-    updateTag("customers_count");
+    revalidateTag("customers", {});
+    revalidateTag("customers_count", {});
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "", res: customerData[0] };
@@ -173,6 +157,7 @@ export const searchCustomers = async (searchTerm: string) => {
   }
 
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase.rpc("search_customers", {
       search_term: searchTerm,
     });
@@ -194,6 +179,7 @@ export const updateCustomer = async (
   payload: Record<string, any>
 ) => {
   try {
+    const supabase = await createClient();
     const { data: UpdatedData, error } = await supabase
       .from("customers")
       .update(payload)
@@ -204,7 +190,7 @@ export const updateCustomer = async (
       throw new Error(error.message);
     }
     revalidatePath("/customers/all");
-    updateTag("customers");
+    revalidateTag("customers", {});
     await revalidateAllPaths();
     return { status: "SUCCESS", error: "", res: UpdatedData };
   } catch (error) {
@@ -215,6 +201,7 @@ export const updateCustomer = async (
 
 export const deleteCustomer = async (customerId: string) => {
   try {
+    const supabase = await createClient();
     const { error } = await supabase
       .from("customers")
       .delete()
@@ -224,8 +211,8 @@ export const deleteCustomer = async (customerId: string) => {
       throw new Error("Delete Customer Error");
     }
     revalidatePath("/customers/all");
-    updateTag("customers");
-    updateTag("customers_count");
+    revalidateTag("customers", {});
+    revalidateTag("customers_count", {});
     await revalidateAllPaths();
     return { status: "SUCCESS", error: "" };
   } catch (error) {

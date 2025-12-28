@@ -139,8 +139,6 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const shortId = id.substring(0, 8).toUpperCase();
 
   const sortedQuantity = getSortedBreadItems(quantity, production.bread_price);
-  console.log(sortedQuantity);
-  console.log(quantity);
   const sortedOldBread = getSortedBreadItems(old_bread, production.bread_price);
 
   return (

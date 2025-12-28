@@ -1,6 +1,7 @@
 "use server";
-import supabase from "@/client";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { createClient } from "@/supabase/server";
+import { revalidateTag } from "next/cache";
+import { cache } from "react";
 import { revalidateAllPaths } from "./revalidate";
 import { isSuperAdmin } from "./roles";
 
@@ -26,6 +27,7 @@ interface UpdateBreadPrice {
  */
 export const fetchAllBreadPrices = async (): Promise<BreadPrice[]> => {
   try {
+    const supabase = await createClient();
     const { data: breadPrices, error } = await supabase
       .from("bread_price")
       .select("*")
@@ -50,6 +52,7 @@ export const fetchBreadPriceById = async (
   id: string
 ): Promise<BreadPrice | null> => {
   try {
+    const supabase = await createClient();
     const { data: breadPrice, error } = await supabase
       .from("bread_price")
       .select("*")
@@ -78,6 +81,7 @@ export const createBreadPrice = async (payload: CreateBreadPrice) => {
       throw new Error("Unauthorized: Only Super Admins can manage prices.");
     }
 
+    const supabase = await createClient();
     const { data: breadPriceData, error } = await supabase
       .from("bread_price")
       .insert({
@@ -114,6 +118,7 @@ export const updateBreadPrice = async (
       throw new Error("Unauthorized: Only Super Admins can manage prices.");
     }
 
+    const supabase = await createClient();
     const { data: updatedBreadPrice, error } = await supabase
       .from("bread_price")
       .update(payload)
@@ -145,6 +150,7 @@ export const deleteBreadPrice = async (breadPriceId: number) => {
       throw new Error("Unauthorized: Only Super Admins can manage prices.");
     }
 
+    const supabase = await createClient();
     const { error } = await supabase
       .from("bread_price")
       .delete()
@@ -170,6 +176,7 @@ export const deleteBreadPrice = async (breadPriceId: number) => {
  */
 export const getBreadPriceCount = async (): Promise<number> => {
   try {
+    const supabase = await createClient();
     const { count, error } = await supabase
       .from("bread_price")
       .select("*", { count: "exact", head: true });
@@ -186,7 +193,7 @@ export const getBreadPriceCount = async (): Promise<number> => {
   }
 };
 
-export const getBreadPriceMultipliers = unstable_cache(
+export const getBreadPriceMultipliers = cache(
   async (): Promise<Record<string, number>> => {
     try {
       const breadPrices = (await fetchAllBreadPrices()).sort(
@@ -204,10 +211,5 @@ export const getBreadPriceMultipliers = unstable_cache(
       console.error("Unexpected error in getBreadPriceMultipliers:", error);
       return {};
     }
-  },
-  ["bread-price-multipliers"],
-  {
-    tags: ["bread_prices"],
-    revalidate: 300,
   }
 );

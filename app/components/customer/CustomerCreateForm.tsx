@@ -48,7 +48,6 @@ const CustomerCreateForm = () => {
     // formData.append("phoneNumber", payload.phoneNumber);
     // formData.append("hasDebt", payload.hasDebt.toString());
     // formData.append("debtAmount", payload.debtAmount.toString());
-    console.log(prevState);
 
     const values = {
       name: formData.get("name"),

@@ -15,8 +15,12 @@ import { getUser } from "@/app/services/roles";
 const Index = async () => {
   const profile = await getUser();
   const totalOutstanding = await getTotalBusinessOutstanding();
-  const latestProduction = (await getLatestProduction()) as Production;
-  const breadTypes = Object.keys(latestProduction.bread_price);
+  const latestProduction = (await getLatestProduction()) as Production | null;
+
+  // Defensive handling for missing production data
+  const breadTypes = latestProduction?.bread_price
+    ? Object.keys(latestProduction.bread_price)
+    : [];
 
   // Dynamically build value object from bread types (quantity + old_bread)
   const productionValue = breadTypes.reduce((acc, breadType) => {
@@ -29,7 +33,7 @@ const Index = async () => {
   const date =
     (latestProduction?.created_at &&
       formatDate(latestProduction?.created_at)) ||
-    0;
+    "No data";
 
   return (
     <div className="min-h-full bg-background">
@@ -50,8 +54,8 @@ const Index = async () => {
           <ProductionCard
             title={`Latest Production - ${date}`}
             value={productionValue}
-            multipliers={latestProduction.bread_price}
-            total={`₦${latestProduction?.total}`}
+            multipliers={latestProduction?.bread_price || {}}
+            total={`₦${latestProduction?.total || 0}`}
             icon={Factory}
             description="Manufacturing output"
           />

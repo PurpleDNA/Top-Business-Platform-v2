@@ -1,8 +1,8 @@
 "use server";
-import supabase from "@/client";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { createClient } from "@/supabase/server";
+import { revalidateTag } from "next/cache";
+import { cache } from "react";
 import { revalidateAllPaths } from "./revalidate";
-import { toast } from "sonner";
 
 export interface Payment {
   id: number;
@@ -34,6 +34,7 @@ export interface Create {
 
 export async function getPaymentById(paymentId: string) {
   try {
+    const supabase = await createClient();
     const { data: payment, error } = await supabase
       .from("payments")
       .select("*")
@@ -91,6 +92,7 @@ export const fetchFilteredPayments = async (
   const offset = (page - 1) * limit;
 
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase.rpc("fetch_payments_paginated", {
       p_limit: limit,
       p_offset: offset,
@@ -110,17 +112,20 @@ export const fetchFilteredPayments = async (
   }
 };
 
-export const fetchAllPaymentsWithDetails = unstable_cache(
-  async (page: number, limit: number) => {
-    // page here represents the batch number, not the actual page
-    // Batch 1 (pages 1-5) -> offset 0
-    // Batch 2 (pages 6-10) -> offset 50
-    const offset = (page - 1) * limit;
-    try {
-      const { data: payments, error } = await supabase
-        .from("payments")
-        .select(
-          `
+export const fetchAllPaymentsWithDetails = async (
+  page: number,
+  limit: number
+) => {
+  // page here represents the batch number, not the actual page
+  // Batch 1 (pages 1-5) -> offset 0
+  // Batch 2 (pages 6-10) -> offset 50
+  const offset = (page - 1) * limit;
+  try {
+    const supabase = await createClient();
+    const { data: payments, error } = await supabase
+      .from("payments")
+      .select(
+        `
         id,
         amount_paid,
         paid_at,
@@ -137,27 +142,21 @@ export const fetchAllPaymentsWithDetails = unstable_cache(
           created_at
         )
       `
-        )
-        .order("paid_at", { ascending: false })
-        .range(offset, offset + limit - 1);
+      )
+      .order("paid_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
-      if (error) {
-        console.error("Error fetching payments with details:", error);
-        return [];
-      }
-
-      return (payments as unknown as PaymentWithDetails[]) || [];
-    } catch (error) {
-      console.error("Unexpected error in fetchAllPaymentsWithDetails:", error);
+    if (error) {
+      console.error("Error fetching payments with details:", error);
       return [];
     }
-  },
-  [],
-  {
-    tags: ["payments"],
-    revalidate: 300,
+
+    return (payments as unknown as PaymentWithDetails[]) || [];
+  } catch (error) {
+    console.error("Unexpected error in fetchAllPaymentsWithDetails:", error);
+    return [];
   }
-);
+};
 
 export async function getPaymentsByCustomerID(
   customerId: string,
@@ -167,6 +166,7 @@ export async function getPaymentsByCustomerID(
   try {
     const start = (page - 1) * limit;
     const end = start + limit - 1;
+    const supabase = await createClient();
     const { data: payments, error } = await supabase
       .from("payments")
       .select("*")
@@ -198,6 +198,7 @@ export const createPaymentForSale = async (
   productionId: string | null = null
 ) => {
   try {
+    const supabase = await createClient();
     // Call atomic RPC function
     const { data, error } = await supabase.rpc(
       "create_payment_for_sale_atomic",
@@ -234,6 +235,7 @@ export const createPaymentForSale = async (
  */
 export async function addPayment(payload: Create) {
   try {
+    const supabase = await createClient();
     const { data: paymentData, error } = await supabase
       .from("payments")
       .insert({
@@ -283,6 +285,7 @@ export async function distributePaymentAcrossSales(
   productionId: string | null = null
 ): Promise<{ status: string; error: string; data?: DistributePaymentResult }> {
   try {
+    const supabase = await createClient();
     // Call the Supabase function
     const { data, error } = await supabase.rpc(
       "distribute_payment_across_sales",
@@ -325,6 +328,7 @@ export const updatePayment = async (
       throw new Error("Amount paid is required for update");
     }
 
+    const supabase = await createClient();
     // Call atomic RPC function
     const { data, error } = await supabase.rpc("update_payment_atomic", {
       p_payment_id: Number(paymentId),
@@ -356,6 +360,7 @@ export const updatePayment = async (
 
 export const deletePayment = async (paymentId: string) => {
   try {
+    const supabase = await createClient();
     // Call atomic RPC function
     const { error } = await supabase.rpc("delete_payment_atomic", {
       p_payment_id: Number(paymentId),
