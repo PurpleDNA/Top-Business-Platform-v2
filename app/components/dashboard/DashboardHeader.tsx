@@ -200,7 +200,7 @@ export const DashboardHeader = ({ profile }: { profile: any }) => {
                 className="relative h-9 w-9 rounded-full cursor-pointer hidden md:flex"
               >
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
+                  <AvatarImage src="/placeholder-avatar.png" alt="User" />
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     <User className="h-4 w-4" />
                   </AvatarFallback>

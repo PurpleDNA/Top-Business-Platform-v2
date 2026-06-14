@@ -105,7 +105,7 @@ export const MobileSideMenu = ({ children }: MobileSideMenuProps) => {
           <div className="p-6 border-b border-border">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
+                <AvatarImage src="/placeholder-avatar.png" alt="User" />
                 <AvatarFallback className="bg-primary text-primary-foreground">
                   <User className="h-6 w-6" />
                 </AvatarFallback>
@@ -137,7 +137,7 @@ export const MobileSideMenu = ({ children }: MobileSideMenuProps) => {
                       "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors",
                       isActive
                         ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                        : "text-foreground hover:bg-accent hover:text-accent-foreground",
                     )}
                   >
                     <Icon
@@ -145,7 +145,7 @@ export const MobileSideMenu = ({ children }: MobileSideMenuProps) => {
                         "h-5 w-5 flex-shrink-0",
                         isActive
                           ? "text-primary-foreground"
-                          : "text-muted-foreground"
+                          : "text-muted-foreground",
                       )}
                     />
                     <span className="text-sm font-medium">{item.title}</span>
@@ -166,7 +166,7 @@ export const MobileSideMenu = ({ children }: MobileSideMenuProps) => {
                   "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors",
                   pathname.startsWith("/settings")
                     ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                    : "text-foreground hover:bg-accent hover:text-accent-foreground",
                 )}
               >
                 <Settings
@@ -174,7 +174,7 @@ export const MobileSideMenu = ({ children }: MobileSideMenuProps) => {
                     "h-5 w-5 flex-shrink-0",
                     pathname.startsWith("/settings")
                       ? "text-primary-foreground"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground",
                   )}
                 />
                 <span className="text-sm font-medium">Settings</span>
