@@ -76,6 +76,7 @@ export const createProduction = async (payload: Create) => {
         old_bread: old_bread,
         sold_bread: sold_bread,
         bread_price: payload.bread_price,
+        total: Number(payload.total),
         cash: 0,
         open: true,
       })
