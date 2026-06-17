@@ -50,7 +50,7 @@ const DEFAULTS = {
  */
 export function getErrorMessage(
   error: unknown,
-  fallback = "Something went wrong. Please try again."
+  fallback = "Something went wrong. Please try again.",
 ): string {
   let raw = "";
 
@@ -66,7 +66,12 @@ export function getErrorMessage(
 
   raw = raw.trim();
 
-  if (!raw || raw === "[object Object]" || raw === "undefined" || raw === "null") {
+  if (
+    !raw ||
+    raw === "[object Object]" ||
+    raw === "undefined" ||
+    raw === "null"
+  ) {
     return fallback;
   }
 
@@ -112,8 +117,7 @@ export const notify = {
   loading: (message: string, options?: ToastOptions) =>
     toast.loading(message, options),
 
-  message: (message: string, options?: ToastOptions) =>
-    toast(message, options),
+  message: (message: string, options?: ToastOptions) => toast(message, options),
 
   /** Bridge an unknown thrown value straight to an error toast. */
   fromError: (error: unknown, fallback?: string, options?: ToastOptions) =>
@@ -129,7 +133,7 @@ export const notify = {
       loading: string;
       success: string | ((data: T) => string);
       error: string | ((error: unknown) => string);
-    }
+    },
   ) =>
     toast.promise(promise, {
       loading: msgs.loading,
@@ -158,7 +162,7 @@ export const notify = {
  */
 export function notifyResult<T>(
   result: ActionResult<T> | null | undefined,
-  msgs: { success: string; error?: string }
+  msgs: { success: string; error?: string },
 ): boolean {
   if (result && result.status === "SUCCESS") {
     notify.success(msgs.success);
@@ -171,7 +175,7 @@ export function notifyResult<T>(
 
 /** Toast for a failed Zod (or similar) input validation. */
 export function notifyValidationError(
-  message = messages.generic.validation
+  message = messages.generic.validation,
 ): void {
   notify.error(message);
 }
@@ -207,7 +211,7 @@ export const messages = {
     deleteFailed: "Couldn't delete the payment. Please try again.",
     invalidAmount: "Enter a valid payment amount.",
     distributed: (cleared: number, partial: number) =>
-      `Payment distributed: ${cleared} sale(s) cleared, ${partial} partially paid.`,
+      `Payment distributed: ${cleared || 0} sale(s) cleared, ${partial} partially paid.`,
     distributeFailed: "Couldn't distribute the payment. Please try again.",
   },
   customer: {

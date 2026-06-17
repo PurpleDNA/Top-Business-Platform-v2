@@ -154,7 +154,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password: payload.password,
     });
     if (error) {
-      throw new Error("Error signing in with Email");
+      throw new Error(error.message);
     }
   }
 

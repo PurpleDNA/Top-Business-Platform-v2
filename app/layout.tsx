@@ -31,11 +31,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${rubik.variable} ${bungee.variable}`}>
-      <body
-        className={`${rubik.className} antialiased overflow-hidden`}
-        suppressHydrationWarning={true}
-      >
+    <html
+      lang="en"
+      className={`${rubik.variable} ${bungee.variable}`}
+      suppressHydrationWarning
+    >
+      <body className={`${rubik.className} antialiased overflow-hidden`}>
         <AuthProvider>
           <ThemeProvider
             attribute="class"
