@@ -56,17 +56,19 @@ export const getBadgeColorClasses = (color: string) => {
 };
 
 export const getSortedBreadItems = (
-  breadQuantities: Record<string, number>,
-  multipliers: Record<string, number>
+  breadQuantities?: Record<string, number> | null,
+  multipliers?: Record<string, number> | null
 ) => {
-  const breadItems = Object.entries(breadQuantities)
+  const prices = multipliers ?? {};
+  const breadItems = Object.entries(breadQuantities ?? {})
     .map(([color, quantity]) => ({
       color,
       quantity,
     }))
     .sort(
       (a, b) =>
-        multipliers[b.color.toLowerCase()] - multipliers[a.color.toLowerCase()]
+        (prices[b.color.toLowerCase()] ?? 0) -
+        (prices[a.color.toLowerCase()] ?? 0)
     )
     .filter((item) => item.quantity > 0);
 

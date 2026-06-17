@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, ArrowLeft, Plus, User } from "lucide-react";
 import Link from "next/link";
 import SalesTable from "@/app/components/productions/SalesTable";
+import { formatNaira } from "@/app/services/utils";
 
 const AllSalesPage = async ({
   params,
@@ -45,8 +46,8 @@ const AllSalesPage = async ({
     });
   };
 
-  const formatQuantity = (quantity: { [key: string]: number }) => {
-    return Object.entries(quantity)
+  const formatQuantity = (quantity?: { [key: string]: number } | null) => {
+    return Object.entries(quantity || {})
       .map(([color, qty]) => `${color[0].toUpperCase()}: ${qty}`)
       .join("| ");
   };
@@ -103,7 +104,7 @@ const AllSalesPage = async ({
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ₦{totalSalesAmount.toLocaleString()}
+                {formatNaira(totalSalesAmount)}
               </div>
             </CardContent>
           </Card>
@@ -116,7 +117,7 @@ const AllSalesPage = async ({
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-destructive">
-                ₦{totalOutstanding.toLocaleString()}
+                {formatNaira(totalOutstanding)}
               </div>
             </CardContent>
           </Card>
@@ -206,7 +207,7 @@ const AllSalesPage = async ({
                     </div>
                     <div className="text-right">
                       <h3 className="font-semibold text-lg">
-                        ₦{sale.amount.toLocaleString()}
+                        {formatNaira(sale.amount)}
                       </h3>
                       <span
                         className={`text-xs ${

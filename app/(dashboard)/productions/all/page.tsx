@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Factory, ArrowLeft, Plus, LockOpen, Lock } from "lucide-react";
 import Link from "next/link";
 import ProductionsTable from "@/app/components/productions/ProductionsTable";
+import { formatNaira } from "@/app/services/utils";
 
 const AllProductionsPage = async () => {
   const productions = (await fetchAllProductions()) as Production[];
@@ -153,18 +154,19 @@ const AllProductionsPage = async () => {
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {Object.keys(production.quantity).map(
+                        {Object.keys(production.quantity || {}).map(
                           (breadType, index) => {
                             const totalQuantity =
-                              (production.quantity[breadType] || 0) +
-                              (production.old_bread[breadType] || 0);
+                              (production.quantity?.[breadType] || 0) +
+                              (production.old_bread?.[breadType] || 0);
                             return (
                               totalQuantity > 0 && (
                                 <span key={breadType}>
                                   {breadType.charAt(0).toUpperCase()}:{" "}
                                   {totalQuantity}
                                   {index <
-                                    Object.keys(production.quantity).length -
+                                    Object.keys(production.quantity || {})
+                                      .length -
                                       1 && " | "}
                                 </span>
                               )
@@ -174,7 +176,7 @@ const AllProductionsPage = async () => {
                       </p>
                     </div>
                     <h3 className="font-semibold text-lg">
-                      ₦{production.total}
+                      {formatNaira(production.total)}
                     </h3>
                   </div>
                 </Link>

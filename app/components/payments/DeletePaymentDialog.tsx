@@ -15,6 +15,7 @@ import {
 import { notify, notifyResult, messages } from "@/lib/notifications";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { deletePayment } from "@/app/services/payments";
+import { formatNaira } from "@/app/services/utils";
 
 interface DeletePaymentDialogProps {
   paymentId: string | number;
@@ -69,7 +70,7 @@ export const DeletePaymentDialog = ({
           </div>
           <AlertDialogDescription>
             Are you sure you want to delete the payment of{" "}
-            <span className="font-semibold">₦{amount.toLocaleString()}</span>{" "}
+            <span className="font-semibold">{formatNaira(amount)}</span>{" "}
             for <span className="font-semibold">{customerName}</span>? This
             action cannot be undone and will reverse the payment effects on
             sales.

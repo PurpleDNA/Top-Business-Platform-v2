@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { formatNaira, formatNumber } from "@/app/services/utils";
 
 interface FinancialSummaryProps {
   cash: number;
@@ -66,9 +67,7 @@ export const FinancialSummary = ({
           >
             {isBalanced
               ? "₦0"
-              : `${isShort ? "-" : "+"}₦${Math.abs(
-                  difference,
-                ).toLocaleString()}`}
+              : `${isShort ? "-" : "+"}₦${formatNumber(Math.abs(difference))}`}
           </span>
           {isOpen ? (
             <ChevronUp className="h-4 w-4 text-muted-foreground" />
@@ -87,7 +86,7 @@ export const FinancialSummary = ({
               <span className="text-sm text-foreground">Cash Collected</span>
             </div>
             <span className="text-sm font-semibold text-foreground">
-              ₦{cash.toLocaleString()}
+              {formatNaira(cash)}
             </span>
           </div>
 
@@ -98,7 +97,7 @@ export const FinancialSummary = ({
               <span className="text-sm text-foreground">Total Expenses</span>
             </div>
             <span className="text-sm font-semibold text-foreground">
-              ₦{totalExpenses.toLocaleString()}
+              {formatNaira(totalExpenses)}
             </span>
           </div>
 
@@ -109,7 +108,7 @@ export const FinancialSummary = ({
               <span className="text-sm text-foreground">Outstanding</span>
             </div>
             <span className="text-sm font-semibold text-foreground">
-              ₦{totalOutstanding.toLocaleString()}
+              {formatNaira(totalOutstanding)}
             </span>
           </div>
 
@@ -120,7 +119,7 @@ export const FinancialSummary = ({
               <span className="text-sm text-foreground">Remaining Bread</span>
             </div>
             <span className="text-sm font-semibold text-foreground">
-              ₦{remainingBreadTotal.toLocaleString()}
+              {formatNaira(remainingBreadTotal)}
             </span>
           </div>
 
@@ -131,7 +130,7 @@ export const FinancialSummary = ({
               <span className="text-sm text-foreground">Paid Outstanding</span>
             </div>
             <span className="text-sm font-semibold text-foreground">
-              -₦{totalPaidOutstanding.toLocaleString()}
+              -{formatNaira(totalPaidOutstanding)}
             </span>
           </div>
 
@@ -142,7 +141,7 @@ export const FinancialSummary = ({
                 Subtotal
               </span>
               <span className="text-sm font-bold text-foreground">
-                ₦{adjustedTotal.toLocaleString()}
+                {formatNaira(adjustedTotal)}
               </span>
             </div>
             {/* Revenue */}
@@ -153,7 +152,7 @@ export const FinancialSummary = ({
                 </span>
               </div>
               <span className="text-sm font-semibold text-foreground">
-                -₦{total.toLocaleString()}
+                -{formatNaira(total)}
               </span>
             </div>
           </div>
@@ -199,9 +198,7 @@ export const FinancialSummary = ({
             >
               {isBalanced
                 ? "₦0"
-                : `${isShort ? "-" : "+"}₦${Math.abs(
-                    difference,
-                  ).toLocaleString()}`}
+                : `${isShort ? "-" : "+"}₦${formatNumber(Math.abs(difference))}`}
             </span>
           </div>
         </div>

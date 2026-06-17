@@ -19,6 +19,7 @@ import { MoreHorizontal, Eye, User } from "lucide-react";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { formatNaira } from "@/app/services/utils";
 
 interface SaleWithCustomer {
   id: string;
@@ -76,12 +77,12 @@ const SalesTable = ({ sales }: { sales: SaleWithCustomer[] }) => {
                 {sale.customers?.name || "Unknown"}
               </TableCell>
               <TableCell className="font-semibold">
-                ₦{sale.amount.toLocaleString()}
+                {formatNaira(sale.amount)}
               </TableCell>
               <TableCell className="hidden md:table-cell">
                 {sale.outstanding > 0 ? (
                   <span className="text-destructive font-medium">
-                    ₦{sale.outstanding.toLocaleString()}
+                    {formatNaira(sale.outstanding)}
                   </span>
                 ) : (
                   <span className="text-muted-foreground">₦0</span>

@@ -15,7 +15,12 @@ import { getExpensesByProdId } from "@/app/services/expenses";
 import { fetchSalesByProductionId } from "@/app/services/sales";
 import RecentSalesTable from "@/app/components/productions/RecentSalesTable";
 import { FinancialSummary } from "@/app/components/productions/FinancialSummary";
-import { formatDate, formatDateTime } from "@/app/services/utils";
+import {
+  formatDate,
+  formatDateTime,
+  formatNaira,
+  formatNumber,
+} from "@/app/services/utils";
 import {
   Factory,
   DollarSign,
@@ -61,8 +66,11 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
     );
   }
 
-  const { total, quantity, cash, created_at, old_bread, sold_bread } =
-    production;
+  const { total, cash, created_at, sold_bread } = production;
+
+  // Defensive fallbacks: bread objects can be null/undefined on legacy or partial rows
+  const quantity = production.quantity || {};
+  const old_bread = production.old_bread || {};
 
   // Use remaining_bread from database
   const remaining_bread = production.remaining_bread || {};
@@ -228,7 +236,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
                                 </span>
                               </div>
                               <span className="text-sm font-semibold text-foreground">
-                                {breadType.quantity.toLocaleString()}
+                                {formatNumber(breadType.quantity)}
                               </span>
                             </div>
                           ),
@@ -257,7 +265,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
                                   </span>
                                 </div>
                                 <span className="text-sm font-semibold text-foreground">
-                                  {breadType.quantity.toLocaleString()}
+                                  {formatNumber(breadType.quantity)}
                                 </span>
                               </div>
                             ),
@@ -273,7 +281,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
                       Total Bread
                     </dt>
                     <dd className="mt-1 text-sm text-foreground font-semibold">
-                      {totalQuantity.toLocaleString()}
+                      {formatNumber(totalQuantity)}
                     </dd>
                   </div>
                   <div className="rounded-lg bg-muted/50 ring-1 ring-border p-4">
@@ -282,7 +290,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
                       Total Value
                     </dt>
                     <dd className="mt-1 text-sm text-foreground font-semibold">
-                      ₦{total.toLocaleString()}
+                      {formatNaira(total)}
                     </dd>
                   </div>
                   {/* Cash Collected */}

@@ -46,6 +46,7 @@ import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { getBadgeColorClasses } from "@/lib/utils";
+import { formatNaira } from "@/app/services/utils";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -56,8 +57,8 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const formatQuantity = (quantity: { [key: string]: number }) => {
-  return Object.entries(quantity)
+const formatQuantity = (quantity?: { [key: string]: number } | null) => {
+  return Object.entries(quantity || {})
     .map(([color, qty]) => `${color[0].toUpperCase()}: ${qty}`)
     .join(" | ");
 };
@@ -343,7 +344,7 @@ function AllSalesContent() {
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <div className="text-2xl font-bold">
-                  ₦{totalSalesAmount.toLocaleString()}
+                  {formatNaira(totalSalesAmount)}
                 </div>
               )}
             </CardContent>
@@ -360,7 +361,7 @@ function AllSalesContent() {
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <div className="text-2xl font-bold text-destructive">
-                  ₦{totalOutstanding.toLocaleString()}
+                  {formatNaira(totalOutstanding)}
                 </div>
               )}
             </CardContent>
@@ -434,12 +435,12 @@ function AllSalesContent() {
                         </div>
                       </TableCell>
                       <TableCell className="font-semibold">
-                        ₦{sale.amount.toLocaleString()}
+                        {formatNaira(sale.amount)}
                       </TableCell>
                       <TableCell>
                         {sale.remaining > 0 ? (
                           <span className="text-destructive font-medium">
-                            ₦{sale.remaining.toLocaleString()}
+                            {formatNaira(sale.remaining)}
                           </span>
                         ) : (
                           <span className="text-muted-foreground">₦0</span>
@@ -560,7 +561,7 @@ function AllSalesContent() {
                   <div className="flex items-center gap-2">
                     <div className="text-right">
                       <h3 className="font-semibold text-lg">
-                        ₦{sale.amount.toLocaleString()}
+                        {formatNaira(sale.amount)}
                       </h3>
                       <span
                         className={`text-xs ${

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { formatNaira } from "@/app/services/utils";
 
 interface OutstandingItem {
   customer_id: string;
@@ -60,8 +61,8 @@ export const OutstandingDropdown = ({
       >
         <CardTitle className="text-lg font-semibold">{title}</CardTitle>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {data.length} {data.length === 1 ? "item" : "items"}
+          <span className="text-sm font-semibold text-foreground">
+            {formatNaira(totalAmount)}
           </span>
           <Button variant="ghost" size="icon" className="h-8 w-8">
             {isOpen ? (
@@ -95,10 +96,7 @@ export const OutstandingDropdown = ({
                           item.paid && "text-green-500"
                         }`}
                       >
-                        ₦
-                        {item.amount
-                          ? item.amount.toLocaleString()
-                          : item.outstanding?.toLocaleString()}
+                        {formatNaira(item.amount ?? item.outstanding)}
                       </span>
                     </div>
                   </Link>
@@ -131,7 +129,7 @@ export const OutstandingDropdown = ({
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
                   <span className="font-semibold text-sm">Total</span>
                   <span className="font-bold text-lg">
-                    ₦{totalAmount.toLocaleString()}
+                    {formatNaira(totalAmount)}
                   </span>
                 </div>
               </div>

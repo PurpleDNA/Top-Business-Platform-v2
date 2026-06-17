@@ -23,6 +23,7 @@ import Link from "next/link";
 import { EditProductionModal } from "@/app/components/productions/EditProductionModal";
 import { DeleteProductionDialog } from "@/app/components/productions/DeleteProductionDialog";
 import { getBadgeColorClasses } from "@/lib/utils";
+import { formatNaira } from "@/app/services/utils";
 import { useIsMobile } from "@/app/hooks/use-mobile";
 
 const formatDate = (dateString: string) => {
@@ -75,10 +76,10 @@ const RecentProductionsTable = ({
               </TableCell>
               <TableCell>
                 <div className="flex gap-2 flex-wrap justify-center lg:justify-start">
-                  {Object.keys(production.bread_price).map((breadType) => {
+                  {Object.keys(production.bread_price || {}).map((breadType) => {
                     const totalQuantity =
-                      (production.quantity[breadType] || 0) +
-                      (production.old_bread[breadType] || 0);
+                      (production.quantity?.[breadType] || 0) +
+                      (production.old_bread?.[breadType] || 0);
                     if (totalQuantity === 0) return null;
 
                     return (
@@ -96,7 +97,7 @@ const RecentProductionsTable = ({
                 </div>
               </TableCell>
               <TableCell className="font-semibold">
-                ₦{production.total.toLocaleString()}
+                {formatNaira(production.total)}
               </TableCell>
               <TableCell>
                 <DropdownMenu>

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calculator, RotateCcw } from "lucide-react";
+import { formatNaira, formatNumber } from "@/app/services/utils";
 
 interface Props {
   multipliers: Record<string, number>;
@@ -94,7 +95,7 @@ export const BreadCalculatorComponent = ({ multipliers }: Props) => {
                 }
               />
               <span className="text-xs text-muted-foreground">
-                ₦{price?.toLocaleString() || 0} each
+                {formatNaira(price)} each
               </span>
             </div>
           ))}
@@ -104,7 +105,9 @@ export const BreadCalculatorComponent = ({ multipliers }: Props) => {
         <div className="p-6 rounded-lg bg-primary/10 border-2 border-primary">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-2">Total Amount</p>
-            <p className="text-4xl font-bold text-foreground">₦{total}</p>
+            <p className="text-4xl font-bold text-foreground">
+              {formatNaira(total)}
+            </p>
           </div>
         </div>
 
@@ -121,10 +124,10 @@ export const BreadCalculatorComponent = ({ multipliers }: Props) => {
                   className="flex justify-between text-sm text-muted-foreground"
                 >
                   <span className="capitalize">
-                    {key}: {val} × ₦{multipliers[key]?.toLocaleString()}
+                    {key}: {val} × ₦{formatNumber(multipliers[key])}
                   </span>
                   <span className="font-medium">
-                    ₦{amount.toLocaleString()}
+                    {formatNaira(amount)}
                   </span>
                 </div>
               );

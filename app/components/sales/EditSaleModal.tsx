@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
 import { getColorClasses } from "@/lib/utils";
+import { formatNaira } from "@/app/services/utils";
 
 interface EditSaleModalProps {
   sale: {
@@ -194,10 +195,9 @@ export const EditSaleModal = ({
             <p>
               Outstanding:{" "}
               <span className="font-semibold">
-                ₦
-                {(
+                {formatNaira(
                   Number(formData.amount) - Number(formData.amount_paid)
-                ).toLocaleString()}
+                )}
               </span>
             </p>
           </div>

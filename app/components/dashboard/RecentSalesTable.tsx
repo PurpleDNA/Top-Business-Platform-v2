@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import React from "react";
 import { SaleWithDetails } from "@/app/services/sales";
 import { getBadgeColorClasses } from "@/lib/utils";
+import { formatNaira } from "@/app/services/utils";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -70,11 +71,11 @@ const RecentSalesTable = ({ sales }: { sales: SaleWithDetails[] }) => {
             <TableCell className="text-right py-4">
               <div className="flex flex-col items-end">
                 <span className="font-semibold text-foreground">
-                  ₦{sale.amount.toLocaleString()}
+                  {formatNaira(sale.amount)}
                 </span>
                 {sale.remaining > 0 ? (
                   <span className="text-[10px] font-medium text-destructive mt-0.5">
-                    Bal: ₦{sale.remaining.toLocaleString()}
+                    Bal: {formatNaira(sale.remaining)}
                   </span>
                 ) : (
                   <span className="text-[10px] font-medium text-primary mt-0.5">

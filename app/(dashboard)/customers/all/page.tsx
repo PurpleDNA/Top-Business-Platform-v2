@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 import Link from "next/link";
 import CustomerRow from "@/app/components/customer/CustomerRow";
+import { formatNaira } from "@/app/services/utils";
 
 const AllCustomersPage = async () => {
   const customers = (await fetchAllCustomers()) as Customer[];
@@ -98,9 +99,7 @@ const AllCustomersPage = async () => {
                           : "text-green-500"
                       } font-semibold`}
                     >
-                      {customer.total_debt > 0
-                        ? `₦${customer.total_debt.toLocaleString()}`
-                        : "₦0"}
+                      {formatNaira(customer.total_debt)}
                     </h3>
                   </div>
                 </Link>

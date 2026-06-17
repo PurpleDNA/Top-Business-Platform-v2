@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatNaira } from "@/app/services/utils";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -343,7 +344,7 @@ function AllPaymentsContent() {
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <div className="text-2xl font-bold">
-                  ₦{totalPaymentsAmount.toLocaleString()}
+                  {formatNaira(totalPaymentsAmount)}
                 </div>
               )}
             </CardContent>
@@ -430,7 +431,7 @@ function AllPaymentsContent() {
                         {payment.customer_name || "Unknown"}
                       </TableCell>
                       <TableCell className="font-semibold">
-                        ₦{payment.amount_paid.toLocaleString()}
+                        {formatNaira(payment.amount_paid)}
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -556,7 +557,7 @@ function AllPaymentsContent() {
                   <div className="flex items-center gap-2">
                     <div className="text-right">
                       <h3 className="font-semibold text-lg">
-                        ₦{payment.amount_paid.toLocaleString()}
+                        {formatNaira(payment.amount_paid)}
                       </h3>
                       <span className="text-xs text-muted-foreground capitalize">
                         {payment.type}

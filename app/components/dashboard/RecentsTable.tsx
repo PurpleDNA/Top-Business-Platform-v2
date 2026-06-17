@@ -22,6 +22,7 @@ import { Customer } from "@/app/services/customers";
 import Link from "next/link";
 import { EditCustomerModal } from "@/app/components/customer/EditCustomerModal";
 import { DeleteCustomerDialog } from "@/app/components/customer/DeleteCustomerDialog";
+import { formatNaira } from "@/app/services/utils";
 
 const getStatusVariant = (hasDebt: boolean, totalDebt: number) => {
   if (!hasDebt || totalDebt === 0) {
@@ -86,7 +87,7 @@ const RecentsTable = ({ customers }: { customers: Customer[] }) => {
                 {customer.phone_number}
               </TableCell>
               <TableCell className="font-semibold hidden lg:table-cell">
-                ₦{customer.total_debt.toLocaleString()}
+                {formatNaira(customer.total_debt)}
               </TableCell>
               <TableCell>
                 <Badge

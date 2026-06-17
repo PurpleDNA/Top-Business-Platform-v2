@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Expense } from "@/app/services/expenses";
+import { formatNaira } from "@/app/services/utils";
 
 interface ExpenseDropdownProps {
   data: Expense[];
@@ -47,8 +48,8 @@ export const ExpenseDropdown = ({
       >
         <CardTitle className="text-lg font-semibold">Expenses</CardTitle>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {data.length} {data.length === 1 ? "item" : "items"}
+          <span className="text-sm font-semibold text-foreground">
+            {formatNaira(totalAmount)}
           </span>
           <Button variant="ghost" size="icon" className="h-8 w-8">
             {isOpen ? (
@@ -75,7 +76,7 @@ export const ExpenseDropdown = ({
                   >
                     <span className="font-medium">{item.expense}</span>
                     <span className="font-semibold">
-                      ₦{item.amount.toLocaleString()}
+                      {formatNaira(item.amount)}
                     </span>
                   </div>
                 ))}
@@ -107,7 +108,7 @@ export const ExpenseDropdown = ({
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
                   <span className="font-semibold text-sm">Total Expenses</span>
                   <span className="font-bold text-lg">
-                    ₦{totalAmount.toLocaleString()}
+                    {formatNaira(totalAmount)}
                   </span>
                 </div>
               </div>

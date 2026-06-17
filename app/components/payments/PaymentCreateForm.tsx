@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Production } from "@/app/services/productions";
+import { formatNumber } from "@/app/services/utils";
 
 interface Props {
   customer?: Customer;
@@ -303,8 +304,8 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
           {isOverpayment && (
             <p className="text-red-500 text-xs mt-1">
               {selected.sale
-                ? `Amount cannot exceed remaining balance: ₦${selected.sale.remaining?.toLocaleString()}`
-                : `Amount cannot exceed customer debt: ₦${selected.customer?.total_debt?.toLocaleString()}`}
+                ? `Amount cannot exceed remaining balance: ₦${formatNumber(selected.sale.remaining)}`
+                : `Amount cannot exceed customer debt: ₦${formatNumber(selected.customer?.total_debt)}`}
             </p>
           )}
           {errors.amountPaid && !isOverpayment && (

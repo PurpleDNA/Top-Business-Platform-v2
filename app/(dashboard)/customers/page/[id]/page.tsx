@@ -153,9 +153,11 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
                       {/* clock icon */}
                       Last Purchase
                     </p>
-                    <span className="text-[10px] text-muted-foreground">
-                      2 days ago
-                    </span>
+                    {sales.length > 0 && (
+                      <span className="text-[10px] text-muted-foreground">
+                        {formatDate(sales[0].created_at)}
+                      </span>
+                    )}
                   </div>
                   <div className="mt-2 text-2xl tracking-tight font-semibold text-foreground">
                     {sales.length > 0 ? `₦${sales[0].amount}` : "N/A"}

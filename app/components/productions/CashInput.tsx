@@ -5,6 +5,7 @@ import { updateProduction } from "@/app/services/productions";
 import { useRouter } from "next/navigation";
 import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
+import { formatNaira } from "@/app/services/utils";
 
 interface CashInputProps {
   productionId: string;
@@ -98,7 +99,7 @@ export const CashInput = ({ productionId, initialCash }: CashInputProps) => {
           className="text-lg font-semibold text-foreground cursor-pointer hover:text-green-400 transition-colors"
           onClick={() => setIsEditing(true)}
         >
-          ₦{cash.toLocaleString()}
+          {formatNaira(cash)}
         </p>
       )}
     </div>

@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { getColorClasses as getColorClass } from "@/lib/utils";
 import { getSortedBreadItems } from "@/lib/utils";
+import { formatNaira, formatNumber } from "@/app/services/utils";
 
 interface RemainingBreadDropdownProps {
   remainingBreadTotal: number;
@@ -39,8 +40,8 @@ export const RemainingBreadDropdown = ({
       >
         <CardTitle className="text-lg font-semibold">Remaining Bread</CardTitle>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {totalUnits} {totalUnits === 1 ? "unit" : "units"}
+          <span className="text-sm font-semibold text-foreground">
+            {formatNaira(remainingBreadTotal)}
           </span>
           <Button variant="ghost" size="icon" className="h-8 w-8">
             {isOpen ? (
@@ -76,7 +77,7 @@ export const RemainingBreadDropdown = ({
                       </span>
                     </div>
                     <span className="font-semibold">
-                      {item.quantity.toLocaleString()} units
+                      {formatNumber(item.quantity)} units
                     </span>
                   </div>
                 ))}
@@ -85,7 +86,7 @@ export const RemainingBreadDropdown = ({
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
                   <span className="font-semibold text-sm">Total Value</span>
                   <span className="font-bold text-lg">
-                    ₦{remainingBreadTotal.toLocaleString()}
+                    {formatNaira(remainingBreadTotal)}
                   </span>
                 </div>
               </div>

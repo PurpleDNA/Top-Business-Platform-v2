@@ -1,4 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * Safely coerce any value to a finite number, falling back to 0.
+ * Guards against undefined/null/NaN coming from empty tables or missing fields.
+ */
+export const toNumber = (value: any): number => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+};
+
+/**
+ * Format a value as a localized number string (e.g. "1,200").
+ * Returns "0" for undefined/null/non-numeric input.
+ */
+export const formatNumber = (value: any): string => {
+  return toNumber(value).toLocaleString();
+};
+
+/**
+ * Format a value as Naira currency (e.g. "₦1,200").
+ * Returns "₦0" for undefined/null/non-numeric input.
+ */
+export const formatNaira = (value: any): string => {
+  return `₦${toNumber(value).toLocaleString()}`;
+};
+
 export const formatDate = (dateString: string) => {
   try {
     const options: Intl.DateTimeFormatOptions = {

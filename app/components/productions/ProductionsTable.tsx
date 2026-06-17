@@ -16,6 +16,7 @@ import { useState } from "react";
 import { EditProductionModal } from "@/app/components/productions/EditProductionModal";
 import { DeleteProductionDialog } from "@/app/components/productions/DeleteProductionDialog";
 import { getBadgeColorClasses } from "@/lib/utils";
+import { formatNaira } from "@/app/services/utils";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -77,10 +78,10 @@ const ProductionsTable = ({ productions }: { productions: Production[] }) => {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2 flex-wrap">
-                      {Object.entries(production.quantity).map(
+                      {Object.entries(production.quantity || {}).map(
                         ([breadType, qty]) => {
                           const totalQuantity =
-                            (qty || 0) + (production.old_bread[breadType] || 0);
+                            (qty || 0) + (production.old_bread?.[breadType] || 0);
                           if (totalQuantity === 0) return null;
 
                           return (
@@ -98,7 +99,7 @@ const ProductionsTable = ({ productions }: { productions: Production[] }) => {
                     </div>
                   </TableCell>
                   <TableCell className="font-semibold">
-                    ₦{production.total.toLocaleString()}
+                    {formatNaira(production.total)}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">

@@ -9,7 +9,7 @@ import Hero from "@/app/components/dashboard/Hero";
 import { getLatestProduction } from "@/app/services/productions";
 import { ProductionCard } from "@/app/components/dashboard/ProductionCard";
 import { Production } from "@/app/services/productions";
-import { formatDate } from "@/app/services/utils";
+import { formatDate, formatNaira } from "@/app/services/utils";
 import { getUser } from "@/app/services/roles";
 
 const Index = async () => {
@@ -44,9 +44,7 @@ const Index = async () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <MetricsCard
             title="Total Customer Debt"
-            value={`₦${totalOutstanding}`}
-            change="+12% from last week"
-            changeType="negative"
+            value={formatNaira(totalOutstanding)}
             icon={DollarSign}
             description="Outstanding customer payments"
           />
@@ -55,7 +53,7 @@ const Index = async () => {
             title={`Latest Production - ${date}`}
             value={productionValue}
             multipliers={latestProduction?.bread_price || {}}
-            total={`₦${latestProduction?.total || 0}`}
+            total={formatNaira(latestProduction?.total)}
             icon={Factory}
             description="Manufacturing output"
           />

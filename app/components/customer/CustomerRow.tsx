@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { EditCustomerModal } from "@/app/components/customer/EditCustomerModal";
 import { DeleteCustomerDialog } from "@/app/components/customer/DeleteCustomerDialog";
+import { formatNaira } from "@/app/services/utils";
 
 const getDebtStatusVariant = (hasDebt: boolean, totalDebt: number) => {
   if (!hasDebt || totalDebt === 0) {
@@ -97,9 +98,7 @@ const CustomerRow = ({ customers }: { customers: Customer[] }) => {
                   </div>
                 </TableCell>
                 <TableCell className="font-semibold">
-                  {customer.total_debt > 0
-                    ? `₦${customer.total_debt.toLocaleString()}`
-                    : "₦0"}
+                  {formatNaira(customer.total_debt)}
                 </TableCell>
                 <TableCell>
                   <Badge
