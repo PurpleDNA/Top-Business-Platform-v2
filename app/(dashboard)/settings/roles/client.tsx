@@ -38,7 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, Shield, User as UserIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Shield, User as UserIcon, Eye, EyeOff } from "lucide-react";
 import { notify, messages } from "@/lib/notifications";
 import { useRouter } from "next/navigation";
 import { DeleteUserDialog } from "./DeleteUserDialog";
@@ -56,6 +56,7 @@ export default function UserManagementClient({
 }: UserManagementClientProps) {
   const [users, setUsers] = useState<UserData[]>(initialUsers);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
@@ -212,13 +213,24 @@ export default function UserManagementClient({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                    minLength={6}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      minLength={6}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
