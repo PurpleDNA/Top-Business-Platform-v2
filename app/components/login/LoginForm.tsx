@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { LogIn } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/app/providers/auth-provider";
@@ -22,6 +22,7 @@ const LoginForm = ({ user }: { user: any }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
 
@@ -118,17 +119,27 @@ const LoginForm = ({ user }: { user: any }) => {
           }
           value={payload.email}
         />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          className="px-3 py-2 border border-border rounded-md text-sm shadow-sm w-full bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          required
-          value={payload.password}
-          onChange={(e) =>
-            setPayload((prev) => ({ ...prev, password: e.target.value }))
-          }
-        />
+        <div className="relative">
+          <input
+            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="px-3 py-2 pr-10 border border-border rounded-md text-sm shadow-sm w-full bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            required
+            value={payload.password}
+            onChange={(e) =>
+              setPayload((prev) => ({ ...prev, password: e.target.value }))
+            }
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
       </form>
       <div className="flex flex-col mt-4">
         <button
