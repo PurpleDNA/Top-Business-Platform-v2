@@ -226,7 +226,7 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
           });
           return result;
         } else {
-          notify.error(messages.payment.distributeFailed);
+          notify.error(result.error);
           return result;
         }
       } else {

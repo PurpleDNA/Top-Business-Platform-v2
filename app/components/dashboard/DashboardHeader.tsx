@@ -3,6 +3,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Bell,
   LoaderCircle,
@@ -113,9 +114,15 @@ export const DashboardHeader = ({ profile }: { profile: any }) => {
           className="flex items-center gap-4 cursor-pointer hover:scale-95 transition-all duration-200"
           onClick={() => router.push("/")}
         >
-          <h1 className="text-xl font-semibold text-foreground ">
-            Top Special
-          </h1>
+          <Image
+            src="/icon.png"
+            alt="Top Special logo"
+            width={100}
+            height={100}
+            priority
+            className="h-9 w-9 object-contain"
+          />
+          <h1 className="text-xl font-semibold text-foreground">Top Special</h1>
         </div>
 
         <div className="flex items-center gap-4">
