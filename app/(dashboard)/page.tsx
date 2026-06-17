@@ -11,6 +11,7 @@ import { ProductionCard } from "@/app/components/dashboard/ProductionCard";
 import { Production } from "@/app/services/productions";
 import { formatDate, formatNaira } from "@/app/services/utils";
 import { getUser } from "@/app/services/roles";
+import Link from "next/link";
 
 const Index = async () => {
   const profile = await getUser();
@@ -49,14 +50,30 @@ const Index = async () => {
             description="Outstanding customer payments"
           />
 
-          <ProductionCard
-            title={`Latest Production - ${date}`}
-            value={productionValue}
-            multipliers={latestProduction?.bread_price || {}}
-            total={formatNaira(latestProduction?.total)}
-            icon={Factory}
-            description="Manufacturing output"
-          />
+          {latestProduction?.id ? (
+            <Link
+              href={`/production/page/${latestProduction.id}`}
+              className="block transition-transform hover:-translate-y-0.5"
+            >
+              <ProductionCard
+                title={`Latest Production - ${date}`}
+                value={productionValue}
+                multipliers={latestProduction?.bread_price || {}}
+                total={formatNaira(latestProduction?.total)}
+                icon={Factory}
+                description="Manufacturing output"
+              />
+            </Link>
+          ) : (
+            <ProductionCard
+              title={`Latest Production - ${date}`}
+              value={productionValue}
+              multipliers={latestProduction?.bread_price || {}}
+              total={formatNaira(latestProduction?.total)}
+              icon={Factory}
+              description="Manufacturing output"
+            />
+          )}
         </div>
 
         {/* Charts and Tables Section */}

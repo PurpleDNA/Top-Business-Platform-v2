@@ -15,14 +15,14 @@ import { cn } from "@/lib/utils";
 
 const createItems = [
   {
-    title: "New Production",
-    href: "/production/new",
-    icon: PackagePlus,
-  },
-  {
     title: "New Sale",
     href: "/sale/new",
     icon: BriefcaseBusiness,
+  },
+  {
+    title: "New Production",
+    href: "/production/new",
+    icon: PackagePlus,
   },
   {
     title: "New Payment",
@@ -77,7 +77,7 @@ export const CreateFab = () => {
           <Plus
             className={cn(
               "h-7 w-7 transition-transform duration-200",
-              open && "rotate-45"
+              open && "rotate-45",
             )}
           />
         </button>
