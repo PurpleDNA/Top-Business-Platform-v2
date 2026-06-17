@@ -52,14 +52,14 @@ export const createProduction = async (payload: Create) => {
       Object.entries(payload.quantity).map(([key, value]) => [
         key,
         Number(value),
-      ])
+      ]),
     );
 
     const old_bread = Object.fromEntries(
       Object.entries(payload.old_bread).map(([key, value]) => [
         key,
         Number(value),
-      ])
+      ]),
     );
 
     const sold_bread: { [key: string]: number } = {};
@@ -110,7 +110,7 @@ export const getLatestProduction = cache(async () => {
       console.error("GET_LATEST_PRODUCTION_QUERY_ERROR:", error);
       throw error;
     }
-
+    console.log(lastProduction[0]);
     if (lastProduction && lastProduction.length > 0) {
       return lastProduction[0];
     } else {
@@ -169,7 +169,7 @@ export const getProductionById = async (id: string) => {
  * @returns Object with isClosed boolean and optional error message
  */
 export const checkProductionClosed = async (
-  productionId: string | null | undefined
+  productionId: string | null | undefined,
 ) => {
   try {
     // If no production ID provided, it's valid (e.g., payments without production_id)
@@ -222,7 +222,7 @@ export const fetchAllProductions = cache(
       console.error("Unexpected error in fetchAllProductions:", error);
       return [];
     }
-  }
+  },
 );
 
 export const getProductionOutstanding = async (productionId: string) => {
@@ -239,7 +239,7 @@ export const getProductionOutstanding = async (productionId: string) => {
           id,
           name
         )
-      `
+      `,
       )
       .eq("production_id", productionId)
       .gt("outstanding", 0)
@@ -279,7 +279,7 @@ export const getProductionPaidOutstanding = async (productionId: string) => {
           id,
           name
         )
-      `
+      `,
       )
       .eq("production_id", productionId)
       .eq("type", "after")
@@ -310,7 +310,7 @@ export const toggleProdStatus = async (productionId: string) => {
     const isAllowed = await isSuperAdmin();
     if (!isAllowed) {
       throw new Error(
-        "Unauthorized: Only Super Admins can open/close productions."
+        "Unauthorized: Only Super Admins can open/close productions.",
       );
     }
 
@@ -320,7 +320,7 @@ export const toggleProdStatus = async (productionId: string) => {
       "toggle_production_status_atomic",
       {
         p_production_id: productionId,
-      }
+      },
     );
 
     if (error) {
@@ -346,13 +346,15 @@ export const toggleProdStatus = async (productionId: string) => {
 
 export const updateProduction = async (
   productionId: string,
-  payload: Partial<Production>
+  payload: Partial<Production>,
 ) => {
   try {
     // Check if production is closed
     const closureCheck = await checkProductionClosed(productionId);
     if (closureCheck.isClosed) {
-      throw new Error("This production is closed and can no longer be updated.");
+      throw new Error(
+        "This production is closed and can no longer be updated.",
+      );
     }
 
     const supabase = await createClient();
@@ -386,10 +388,10 @@ export const updateProduction = async (
  */
 export const updateSoldBread = async (
   _productionId: string,
-  _soldQuantity: Record<string, number>
+  _soldQuantity: Record<string, number>,
 ) => {
   console.warn(
-    "updateSoldBread is deprecated. The database trigger handles sold_bread updates automatically."
+    "updateSoldBread is deprecated. The database trigger handles sold_bread updates automatically.",
   );
   // Return success immediately since the trigger handles this
   return {
@@ -401,7 +403,7 @@ export const updateSoldBread = async (
 
 export const calculateBreadTotal = async (
   breadQuantities: { [key: string]: number } | null | undefined,
-  production?: Production | null
+  production?: Production | null,
 ): Promise<number> => {
   try {
     if (!breadQuantities) return 0;
@@ -435,7 +437,9 @@ export const deleteProduction = async (productionId: string) => {
     // Check if production is closed
     const closureCheck = await checkProductionClosed(productionId);
     if (closureCheck.isClosed) {
-      throw new Error("This production is closed and can no longer be deleted.");
+      throw new Error(
+        "This production is closed and can no longer be deleted.",
+      );
     }
 
     const supabase = await createClient();
