@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Rubik, Bungee } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/theme-provider";
 import { AuthProvider } from "./providers/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
+import { ServiceWorkerRegister } from "./components/ServiceWorkerRegister";
 
 const rubik = Rubik({
   variable: "--font-rubik",
@@ -21,6 +22,18 @@ const bungee = Bungee({
 export const metadata: Metadata = {
   title: "Top Business Platform",
   description: "A platform for managing business operations",
+  appleWebApp: {
+    capable: true,
+    title: "Top Business",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
 };
 
 export const dynamic = "force-dynamic";
@@ -46,6 +59,7 @@ export default function RootLayout({
           >
             <Toaster />
             {children}
+            <ServiceWorkerRegister />
             <Analytics />
           </ThemeProvider>
         </AuthProvider>
