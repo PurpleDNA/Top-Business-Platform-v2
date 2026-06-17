@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {
-  Customer,
-  searchCustomers,
-} from "@/app/services/customers";
+import { Customer, searchCustomers } from "@/app/services/customers";
 import React, { useActionState, useEffect, useState } from "react";
 import { notify, messages } from "@/lib/notifications";
 import z from "zod";
@@ -50,7 +47,7 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
   const [searching, setSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [customerSearchValue, setCustomerSearchValue] = useState(
-    selected?.customer?.name || ""
+    selected?.customer?.name || "",
   );
   const [shouldSearch, setShouldSearch] = useState(false);
   const [unpaidSales, setUnpaidSales] = useState<any[]>([]);
@@ -59,8 +56,8 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
     Number(payload.amountPaid) > 0 && selected.sale
       ? Number(payload.amountPaid) > selected.sale.remaining
       : Number(payload.amountPaid) > 0 && selected.customer
-      ? Number(payload.amountPaid) > (selected.customer?.total_debt ?? 0)
-      : false;
+        ? Number(payload.amountPaid) > (selected.customer?.total_debt ?? 0)
+        : false;
 
   // Fetch unpaid sales when customer is selected
   useEffect(() => {
@@ -101,25 +98,27 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
 
     // Debounce the search
     setSearching(true);
+    let cancelled = false;
     const timeoutId = setTimeout(async () => {
       try {
         const results = (await searchCustomers(
-          customerSearchValue
+          customerSearchValue,
         )) as Customer[];
-        // Only update if the search value hasn't changed
-        if (customerSearchValue.length >= 3) {
-          setSearchResuls(results);
-          setShowResults(true);
-        }
+        // Ignore stale in-flight results once the query changed or a
+        // customer was selected (both retrigger this effect's cleanup).
+        if (cancelled) return;
+        setSearchResuls(results);
+        setShowResults(true);
       } catch (error) {
         console.log(error);
       } finally {
-        setSearching(false);
+        if (!cancelled) setSearching(false);
       }
     }, 300); // 300ms debounce
 
     // Cleanup function to cancel pending searches
     return () => {
+      cancelled = true;
       clearTimeout(timeoutId);
       setSearching(false);
     };
@@ -162,6 +161,17 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
     }));
   }
 
+  function handleSaleCleared() {
+    setSelected((prev) => ({
+      ...prev,
+      sale: undefined,
+    }));
+    setPayload((prev) => ({
+      ...prev,
+      saleId: "",
+    }));
+  }
+
   const handleClick = (customer: Customer) => {
     console.log("Selected customer:", customer); // Debug: check customer data
     console.log("Customer total_debt:", customer.total_debt); // Debug: check total_debt
@@ -189,7 +199,7 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
         const result = await distributePaymentAcrossSales(
           payload.customerId,
           Number(payload.amountPaid),
-          latestProd.open ? latestProd.id : null
+          latestProd.open ? latestProd.id : null,
         );
 
         if (result.status === "SUCCESS") {
@@ -197,8 +207,8 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
           notify.success(
             messages.payment.distributed(
               data.sales_fully_cleared,
-              data.sales_partially_paid
-            )
+              data.sales_partially_paid,
+            ),
           );
 
           // Reset form after successful submission
@@ -224,7 +234,7 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
           payload.customerId,
           payload.saleId,
           Number(payload.amountPaid),
-          latestProd.open ? latestProd.id : null
+          latestProd.open ? latestProd.id : null,
         );
 
         if (response.status !== "SUCCESS") {
@@ -330,7 +340,7 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
             />
           )}
         </div>
-        {showResults && (
+        {showResults && customerSearchValue.length >= 3 && (
           <div className="max-h-32 min-h-20 overflow-y-auto w-max p-3 shadow border rounded-md mt-4 border-primary absolute z-20 bg-background text-foreground justify-self-center flex items-center flex-col justify-center">
             {searchResults.length > 0 ? (
               searchResults?.map((result) => (
@@ -380,6 +390,13 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
           </DropdownMenuTrigger>
           {unpaidSales.length > 0 && (
             <DropdownMenuContent className="max-h-32 overflow-y-auto">
+              {selected.sale && (
+                <DropdownMenuItem onClick={handleSaleCleared}>
+                  <span className="text-sm text-muted-foreground">
+                    None (distribute across all)
+                  </span>
+                </DropdownMenuItem>
+              )}
               {unpaidSales.map((sale) => (
                 <DropdownMenuItem
                   key={sale.id}

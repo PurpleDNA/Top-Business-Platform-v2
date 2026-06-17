@@ -6,15 +6,12 @@ import { usePathname } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
-  UserPlus,
   Users,
   Factory,
   BriefcaseBusiness,
   CircleDollarSign,
   Calculator,
   Home,
-  AppWindow,
-  PackagePlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -34,30 +31,15 @@ const navigationItems = [
     href: "/customers/all",
     icon: Users,
   },
-  // {
-  //   title: "New Production",
-  //   href: "/production/new",
-  //   icon: PackagePlus,
-  // },
-  // {
-  //   title: "New Sale",
-  //   href: "/sale/new",
-  //   icon: BriefcaseBusiness,
-  // },
-  // {
-  //   title: "New Payment",
-  //   href: "/payment/new",
-  //   icon: CircleDollarSign,
-  // },
-  // {
-  //   title: "New Customer",
-  //   href: "/customers/new",
-  //   icon: UserPlus,
-  // },
   {
-    title: "New Expense",
-    href: "/expenses/new",
-    icon: AppWindow,
+    title: "All Sales",
+    href: "/sales/all",
+    icon: BriefcaseBusiness,
+  },
+  {
+    title: "All Payments",
+    href: "/payments/all",
+    icon: CircleDollarSign,
   },
   {
     title: "Bread Calculator",

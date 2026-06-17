@@ -5,13 +5,10 @@ import { usePathname } from "next/navigation";
 import {
   BriefcaseBusiness,
   CircleDollarSign,
-  FileText,
-  UserPlus,
   Calculator,
   Settings,
   User,
   LogOut,
-  AppWindow,
   Users,
   Factory,
 } from "lucide-react";
@@ -40,29 +37,14 @@ const navigationItems = [
     icon: Users,
   },
   {
-    title: "New Sale",
-    href: "/sale/new",
+    title: "All Sales",
+    href: "/sales/all",
     icon: BriefcaseBusiness,
   },
   {
-    title: "New Payment",
-    href: "/payment/new",
+    title: "All Payments",
+    href: "/payments/all",
     icon: CircleDollarSign,
-  },
-  {
-    title: "New Production",
-    href: "/production/new",
-    icon: FileText,
-  },
-  {
-    title: "New Customer",
-    href: "/customers/new",
-    icon: UserPlus,
-  },
-  {
-    title: "New Expense",
-    href: "/expenses/new",
-    icon: AppWindow,
   },
   {
     title: "Bread Calculator",

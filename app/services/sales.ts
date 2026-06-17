@@ -85,7 +85,9 @@ export const fetchFilteredSales = async (
   page: number,
   limit: number,
   customerId?: string | null,
-  productionId?: string | null
+  productionId?: string | null,
+  startDate?: string | null,
+  endDate?: string | null
 ): Promise<FilteredSale[]> => {
   const offset = (page - 1) * limit;
 
@@ -96,6 +98,8 @@ export const fetchFilteredSales = async (
       p_offset: offset,
       p_customer_id: customerId || null,
       p_production_id: productionId || null,
+      p_start_date: startDate || null,
+      p_end_date: endDate || null,
     });
 
     if (error) {

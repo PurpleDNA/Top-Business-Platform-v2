@@ -1373,7 +1373,7 @@ ALTER FUNCTION public.distribute_payment_across_sales(p_customer_id uuid, p_amou
 -- Name: fetch_payments_paginated(integer, integer, uuid, uuid); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid DEFAULT NULL::uuid, p_production_id uuid DEFAULT NULL::uuid) RETURNS TABLE(id bigint, amount_paid numeric, paid_at timestamp with time zone, customer_id uuid, production_id uuid, sale_id uuid, type text, customer_name text, production_date timestamp with time zone)
+CREATE FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid DEFAULT NULL::uuid, p_production_id uuid DEFAULT NULL::uuid, p_start_date timestamp with time zone DEFAULT NULL::timestamp with time zone, p_end_date timestamp with time zone DEFAULT NULL::timestamp with time zone) RETURNS TABLE(id bigint, amount_paid numeric, paid_at timestamp with time zone, customer_id uuid, production_id uuid, sale_id uuid, type text, customer_name text, production_date timestamp with time zone)
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -1394,6 +1394,8 @@ BEGIN
   WHERE
     (p_customer_id IS NULL OR p.customer_id = p_customer_id)
     AND (p_production_id IS NULL OR p.production_id = p_production_id)
+    AND (p_start_date IS NULL OR p.paid_at >= p_start_date)
+    AND (p_end_date IS NULL OR p.paid_at <= p_end_date)
   ORDER BY p.paid_at DESC
   LIMIT p_limit
   OFFSET p_offset;
@@ -1401,13 +1403,13 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid) OWNER TO postgres;
+ALTER FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone) OWNER TO postgres;
 
 --
 -- Name: fetch_sales_paginated(integer, integer, uuid, uuid); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid DEFAULT NULL::uuid, p_production_id uuid DEFAULT NULL::uuid) RETURNS TABLE(id uuid, amount numeric, paid boolean, outstanding numeric, remaining numeric, amount_paid numeric, created_at timestamp with time zone, customer_id uuid, production_id uuid, quantity_bought jsonb, customer_name text, production_date timestamp with time zone)
+CREATE FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid DEFAULT NULL::uuid, p_production_id uuid DEFAULT NULL::uuid, p_start_date timestamp with time zone DEFAULT NULL::timestamp with time zone, p_end_date timestamp with time zone DEFAULT NULL::timestamp with time zone) RETURNS TABLE(id uuid, amount numeric, paid boolean, outstanding numeric, remaining numeric, amount_paid numeric, created_at timestamp with time zone, customer_id uuid, production_id uuid, quantity_bought jsonb, customer_name text, production_date timestamp with time zone)
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -1431,6 +1433,8 @@ BEGIN
   WHERE
     (p_customer_id IS NULL OR s.customer_id = p_customer_id)
     AND (p_production_id IS NULL OR s.production_id = p_production_id)
+    AND (p_start_date IS NULL OR s.created_at >= p_start_date)
+    AND (p_end_date IS NULL OR s.created_at <= p_end_date)
   ORDER BY s.created_at DESC
   LIMIT p_limit
   OFFSET p_offset;
@@ -1438,7 +1442,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid) OWNER TO postgres;
+ALTER FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone) OWNER TO postgres;
 
 --
 -- Name: get_customer_monthly_purchases(uuid); Type: FUNCTION; Schema: public; Owner: postgres
@@ -7514,21 +7518,21 @@ GRANT ALL ON FUNCTION public.distribute_payment_across_sales(p_customer_id uuid,
 
 
 --
--- Name: FUNCTION fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid); Type: ACL; Schema: public; Owner: postgres
+-- Name: FUNCTION fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone); Type: ACL; Schema: public; Owner: postgres
 --
 
-GRANT ALL ON FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid) TO anon;
-GRANT ALL ON FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid) TO authenticated;
-GRANT ALL ON FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid) TO service_role;
+GRANT ALL ON FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone) TO anon;
+GRANT ALL ON FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone) TO authenticated;
+GRANT ALL ON FUNCTION public.fetch_payments_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone) TO service_role;
 
 
 --
--- Name: FUNCTION fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid); Type: ACL; Schema: public; Owner: postgres
+-- Name: FUNCTION fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone); Type: ACL; Schema: public; Owner: postgres
 --
 
-GRANT ALL ON FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid) TO anon;
-GRANT ALL ON FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid) TO authenticated;
-GRANT ALL ON FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid) TO service_role;
+GRANT ALL ON FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone) TO anon;
+GRANT ALL ON FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone) TO authenticated;
+GRANT ALL ON FUNCTION public.fetch_sales_paginated(p_limit integer, p_offset integer, p_customer_id uuid, p_production_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone) TO service_role;
 
 
 --

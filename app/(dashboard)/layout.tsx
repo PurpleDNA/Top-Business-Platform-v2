@@ -1,3 +1,4 @@
+import { CreateFab } from "@/app/components/dashboard/CreateFab";
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader";
 import { MobileBottomBar } from "@/app/components/dashboard/MobileBottomBar";
 import { Sidebar } from "@/app/components/dashboard/Sidebar";
@@ -19,6 +20,7 @@ export default async function DashboardLayout({
         <main className="flex-1 overflow-y-auto pb-20 md:pb-0">{children}</main>
       </div>
       <MobileBottomBar />
+      <CreateFab />
     </>
   );
 }

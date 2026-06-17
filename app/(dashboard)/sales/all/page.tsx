@@ -66,9 +66,13 @@ function AllSalesContent() {
   const [filters, setFilters] = useState<{
     customerId: string | null;
     productionId: string | null;
+    startDate: string | null;
+    endDate: string | null;
   }>({
     customerId: null,
     productionId: null,
+    startDate: null,
+    endDate: null,
   });
 
   const [cache, setCache] = useState<
@@ -98,7 +102,7 @@ function AllSalesContent() {
   // Generate unique key for current filter state
   const filterKey = `${filters.customerId || "all"}-${
     filters.productionId || "all"
-  }`;
+  }-${filters.startDate || "any"}-${filters.endDate || "any"}`;
 
   // Fetch customers and productions once
   useEffect(() => {
@@ -133,7 +137,9 @@ function AllSalesContent() {
         batchNumber,
         50,
         filters.customerId,
-        filters.productionId
+        filters.productionId,
+        filters.startDate ? `${filters.startDate}T00:00:00` : null,
+        filters.endDate ? `${filters.endDate}T23:59:59` : null
       );
 
       setCache((prev) => {
@@ -162,18 +168,35 @@ function AllSalesContent() {
     };
 
     fetchBatch();
-  }, [page, filterKey, filters.customerId, filters.productionId]);
+  }, [
+    page,
+    filterKey,
+    filters.customerId,
+    filters.productionId,
+    filters.startDate,
+    filters.endDate,
+  ]);
 
   const handleFilterChange = (
-    type: "customer" | "production",
+    type: "customer" | "production" | "startDate" | "endDate",
     value: string
   ) => {
+    const fieldMap = {
+      customer: "customerId",
+      production: "productionId",
+      startDate: "startDate",
+      endDate: "endDate",
+    } as const;
     const newFilters = {
       ...filters,
-      [type === "customer" ? "customerId" : "productionId"]:
-        value === "all" ? null : value,
+      [fieldMap[type]]: value === "all" || value === "" ? null : value,
     };
     setFilters(newFilters);
+    router.push(`${pathname}?page=1`);
+  };
+
+  const handleClearDates = () => {
+    setFilters((prev) => ({ ...prev, startDate: null, endDate: null }));
     router.push(`${pathname}?page=1`);
   };
 
@@ -271,6 +294,39 @@ function AllSalesContent() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2 flex flex-col">
+            <label className="text-sm font-medium">From date</label>
+            <input
+              type="date"
+              value={filters.startDate || ""}
+              max={filters.endDate || undefined}
+              onChange={(e) => handleFilterChange("startDate", e.target.value)}
+              className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+          </div>
+
+          <div className="space-y-2 flex flex-col">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">To date</label>
+              {(filters.startDate || filters.endDate) && (
+                <button
+                  type="button"
+                  onClick={handleClearDates}
+                  className="text-xs text-muted-foreground hover:text-foreground underline"
+                >
+                  Clear dates
+                </button>
+              )}
+            </div>
+            <input
+              type="date"
+              value={filters.endDate || ""}
+              min={filters.startDate || undefined}
+              onChange={(e) => handleFilterChange("endDate", e.target.value)}
+              className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
           </div>
         </div>
 

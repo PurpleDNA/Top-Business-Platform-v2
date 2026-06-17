@@ -126,25 +126,27 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
 
     // Debounce the search
     setSearching(true);
+    let cancelled = false;
     const timeoutId = setTimeout(async () => {
       try {
         const results = (await searchCustomers(
           customerSearchValue,
         )) as Customer[];
-        // Only update if the search value hasn't changed
-        if (customerSearchValue.length >= 3) {
-          setSearchResuls(results);
-          setShowResults(true);
-        }
+        // Ignore stale in-flight results once the query changed or a
+        // customer was selected (both retrigger this effect's cleanup).
+        if (cancelled) return;
+        setSearchResuls(results);
+        setShowResults(true);
       } catch (error) {
         console.log(error);
       } finally {
-        setSearching(false);
+        if (!cancelled) setSearching(false);
       }
     }, 300); // 300ms debounce
 
     // Cleanup function to cancel pending searches
     return () => {
+      cancelled = true;
       clearTimeout(timeoutId);
       setSearching(false);
     };
@@ -404,7 +406,7 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
             />
           )}
         </div>
-        {showResults && (
+        {showResults && customerSearchValue.length >= 3 && (
           <div className="max-h-32 min-h-20 overflow-y-auto w-max p-3 shadow border rounded-md mt-4 border-primary absolute z-20 bg-background justify-self-center flex items-center flex-col justify-center text-foreground">
             {searchResults.length > 0 ? (
               searchResults?.map((result) => (
