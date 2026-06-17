@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { LoaderCircle, UserRoundX } from "lucide-react";
 import z from "zod";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { formatDateTime, getTimeFrame } from "@/app/services/utils";
 import { Production } from "@/app/services/productions";
 import { getBreadPriceMultipliers } from "@/app/services/bread_price";
@@ -47,8 +47,8 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
     production: production
       ? production
       : productions && productions[0]
-      ? productions[0]
-      : undefined,
+        ? productions[0]
+        : undefined,
     customer: customer || undefined,
   });
 
@@ -73,7 +73,7 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
   const [searching, setSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [customerSearchValue, setCustomerSearchValue] = useState(
-    selected?.customer?.name || ""
+    selected?.customer?.name || "",
   );
   const [shouldSearch, setShouldSearch] = useState(false);
   const [isOverpayment, setIsOverpayment] = useState(false);
@@ -129,7 +129,7 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
     const timeoutId = setTimeout(async () => {
       try {
         const results = (await searchCustomers(
-          customerSearchValue
+          customerSearchValue,
         )) as Customer[];
         // Only update if the search value hasn't changed
         if (customerSearchValue.length >= 3) {
@@ -161,7 +161,7 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
   async function handleSelected(
     name: string,
     production: Production | null,
-    customer: Customer | null
+    customer: Customer | null,
   ) {
     if (name === "production" && production) {
       setSelected((prev) => ({
@@ -202,7 +202,7 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
       const response = await createSaleWithPaymentAndInventory(payload);
 
       if (response.status !== "SUCCESS") {
-        toast.error("Failed to create sale");
+        notify.error(messages.sale.createFailed);
         return response;
       }
 
@@ -215,7 +215,7 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
         return newRemaining;
       });
 
-      toast.success("Sale created successfully");
+      notify.success(messages.sale.created);
 
       // Build dynamic reset objects
       const resetQuantity: { [key: string]: number } = {};
@@ -251,10 +251,10 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         setErrors(fieldErrors as unknown as Record<string, string>);
-        toast.error("Validation error, check your input");
+        notify.error(messages.generic.validation);
         return { status: "ERROR", error: fieldErrors };
       } else {
-        toast.error("Unexpected error occurred");
+        notify.fromError(error, messages.sale.createFailed);
         console.error("Sale creation error:", error);
         return { status: "ERROR", error: String(error) };
       }

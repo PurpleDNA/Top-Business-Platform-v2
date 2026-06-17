@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import z from "zod";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 
 const validateCreate = z
   .object({
@@ -63,7 +63,7 @@ const CustomerCreateForm = () => {
       const response = await createCustomer(payload);
 
       if (response.status === "SUCCESS") {
-        toast("Customer has been created successfully");
+        notify.success(messages.customer.created);
         // Reset form after successful submission
         setPayload({
           name: "",
@@ -71,16 +71,18 @@ const CustomerCreateForm = () => {
           hasDebt: false,
           debtAmount: "",
         });
+      } else {
+        notify.error(messages.customer.createFailed);
       }
       return response;
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         setErrors(fieldErrors as unknown as Record<string, string>);
-        toast.error("Validation error, check your input");
+        notify.error(messages.generic.validation);
         return { status: "ERROR", error: fieldErrors };
       } else {
-        toast("Unexpected error occured");
+        notify.fromError(error, messages.customer.createFailed);
       }
     }
   }

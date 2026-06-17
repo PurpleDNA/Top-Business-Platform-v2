@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { toggleProdStatus } from "@/app/services/productions";
 import { useRouter } from "next/navigation";
+import { notify, messages } from "@/lib/notifications";
 import { Lock, LockOpen, Loader2 } from "lucide-react";
 
 interface ProductionToggleProps {
@@ -33,10 +34,12 @@ export const ProductionToggle = ({
         // Optimistically update the UI (only if newStatus is defined)
         if (typeof result.newStatus === "boolean") {
           setIsOpen(result.newStatus);
+          notify.success(messages.production.statusToggled(result.newStatus));
         } else {
           console.warn(
             "toggleProdStatus returned undefined newStatus, skipping optimistic update."
           );
+          notify.success(messages.production.statusToggled(!isOpen));
         }
 
         // Refresh the page data
@@ -45,10 +48,11 @@ export const ProductionToggle = ({
         });
       } else {
         console.error("Toggle failed:", result.error);
-        // Optionally show error toast/notification
+        notify.error(messages.production.statusFailed);
       }
     } catch (error) {
       console.error("Unexpected error toggling production status:", error);
+      notify.fromError(error, messages.production.statusFailed);
     } finally {
       setIsLoading(false);
     }

@@ -12,7 +12,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { deletePayment } from "@/app/services/payments";
 
@@ -42,8 +42,7 @@ export const DeletePaymentDialog = ({
     try {
       const result = await deletePayment(String(paymentId));
 
-      if (result.status === "SUCCESS") {
-        toast.success("Payment deleted successfully");
+      if (notifyResult(result, { success: messages.payment.deleted, error: messages.payment.deleteFailed })) {
         onOpenChange(false);
 
         if (redirectOnDelete) {
@@ -51,12 +50,10 @@ export const DeletePaymentDialog = ({
         } else {
           router.refresh();
         }
-      } else {
-        toast.error(result.error || "Failed to delete payment");
       }
     } catch (error) {
       console.error("Error deleting payment:", error);
-      toast.error("An unexpected error occurred");
+      notify.fromError(error, messages.payment.deleteFailed);
     } finally {
       setLoading(false);
     }

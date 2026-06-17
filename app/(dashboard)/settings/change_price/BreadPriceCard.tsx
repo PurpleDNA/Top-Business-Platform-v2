@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { EditBreadPriceModal } from "./EditBreadPriceModal";
 import { DeleteBreadPriceDialog } from "./DeleteBreadPriceDialog";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 
 interface Props {
   id: number;
@@ -32,11 +32,11 @@ export const BreadPriceCard = ({
   const handleDeleteConfirm = async () => {
     try {
       await deleteBreadPrice(id);
-      toast.success("Price entry deleted successfully");
+      notify.success(messages.breadPrice.deleted);
       onDelete(id);
     } catch (error) {
       console.error("Error deleting price:", error);
-      toast.error("Failed to delete price entry");
+      notify.fromError(error, messages.breadPrice.deleteFailed);
       throw error;
     }
   };

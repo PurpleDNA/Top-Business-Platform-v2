@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
 
 interface EditPaymentModalProps {
@@ -63,23 +63,20 @@ export const EditPaymentModal = ({
       const amountPaid = Number(amount);
 
       if (isNaN(amountPaid) || amountPaid <= 0) {
-        toast.error("Please enter a valid amount");
+        notify.error(messages.payment.invalidAmount);
         setLoading(false);
         return;
       }
 
       const result = await updatePayment(String(payment.id), { amountPaid });
 
-      if (result.status === "SUCCESS") {
-        toast.success("Payment updated successfully");
+      if (notifyResult(result, { success: messages.payment.updated, error: messages.payment.updateFailed })) {
         onOpenChange(false);
         router.refresh();
-      } else {
-        toast.error(result.error || "Failed to update payment");
       }
     } catch (error) {
       console.error("Error updating payment:", error);
-      toast.error("An unexpected error occurred");
+      notify.fromError(error, messages.payment.updateFailed);
     } finally {
       setLoading(false);
     }

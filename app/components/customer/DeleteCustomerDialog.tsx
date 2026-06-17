@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { deleteCustomer } from "@/app/services/customers";
 
@@ -39,8 +39,7 @@ export const DeleteCustomerDialog = ({
     try {
       const result = await deleteCustomer(customerId);
 
-      if (result.status === "SUCCESS") {
-        toast.success("Customer deleted successfully");
+      if (notifyResult(result, { success: messages.customer.deleted, error: messages.customer.deleteFailed })) {
         onOpenChange(false);
 
         if (redirectOnDelete) {
@@ -48,12 +47,10 @@ export const DeleteCustomerDialog = ({
         } else {
           router.refresh();
         }
-      } else {
-        toast.error(result.error || "Failed to delete customer");
       }
     } catch (error) {
       console.error("Error deleting customer:", error);
-      toast.error("An unexpected error occurred");
+      notify.fromError(error, messages.customer.deleteFailed);
     } finally {
       setIsLoading(false);
     }

@@ -6,7 +6,7 @@ import {
   searchCustomers,
 } from "@/app/services/customers";
 import React, { useActionState, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import z from "zod";
 import {
   distributePaymentAcrossSales,
@@ -194,8 +194,11 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
 
         if (result.status === "SUCCESS") {
           const data = result.data!;
-          toast.success(
-            `Payment distributed! Cleared ${data.sales_fully_cleared} sale(s), updated ${data.sales_partially_paid}`
+          notify.success(
+            messages.payment.distributed(
+              data.sales_fully_cleared,
+              data.sales_partially_paid
+            )
           );
 
           // Reset form after successful submission
@@ -212,7 +215,7 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
           });
           return result;
         } else {
-          toast.error("Error distributing payment: " + result.error);
+          notify.error(messages.payment.distributeFailed);
           return result;
         }
       } else {
@@ -225,11 +228,11 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
         );
 
         if (response.status !== "SUCCESS") {
-          toast.error("Failed to create payment");
+          notify.error(messages.payment.createFailed);
           return response;
         }
 
-        toast.success("Payment made successfully");
+        notify.success(messages.payment.created);
 
         // Reset form after successful submission
         setPayload({
@@ -251,10 +254,10 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         setErrors(fieldErrors as unknown as Record<string, string>);
-        toast.error("Validation error, check your input");
+        notify.error(messages.generic.validation);
         return { status: "ERROR", error: fieldErrors };
       } else {
-        toast.error("Unexpected error occurred");
+        notify.fromError(error, messages.payment.createFailed);
         return { status: "ERROR", error: String(error) };
       }
     }

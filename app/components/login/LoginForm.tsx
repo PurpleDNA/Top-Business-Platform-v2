@@ -6,7 +6,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { LoaderCircle } from "lucide-react";
 
 const LoginForm = ({ user }: { user: any }) => {
@@ -53,11 +53,11 @@ const LoginForm = ({ user }: { user: any }) => {
     const password = payload.password;
     try {
       await signInWithEmail({ email, password });
-      toast("yayy!!, login succesful");
+      notify.success(messages.auth.loginSuccess);
       router.push("/");
     } catch (error) {
       console.log(error);
-      toast("Login failed, check your credentials and try again");
+      notify.fromError(error, messages.auth.loginFailed);
     } finally {
       setLoading(false);
     }

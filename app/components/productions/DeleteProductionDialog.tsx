@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { deleteProduction } from "@/app/services/productions";
 
@@ -39,8 +39,7 @@ export const DeleteProductionDialog = ({
     try {
       const result = await deleteProduction(productionId);
 
-      if (result.status === "SUCCESS") {
-        toast.success("Production deleted successfully");
+      if (notifyResult(result, { success: messages.production.deleted, error: messages.production.deleteFailed })) {
         onOpenChange(false);
 
         if (redirectOnDelete) {
@@ -48,12 +47,10 @@ export const DeleteProductionDialog = ({
         } else {
           router.refresh();
         }
-      } else {
-        toast.error(result.error || "Failed to delete production");
       }
     } catch (error) {
       console.error("Error deleting production:", error);
-      toast.error("An unexpected error occurred");
+      notify.fromError(error, messages.production.deleteFailed);
     } finally {
       setIsLoading(false);
     }

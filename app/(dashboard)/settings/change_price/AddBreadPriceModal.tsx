@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoaderCircle } from "lucide-react";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 
 interface Props {
   open: boolean;
@@ -55,7 +55,7 @@ export const AddBreadPriceModal = ({ open, onOpenChange, onSuccess }: Props) => 
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error("Please fix the validation errors");
+      notify.error(messages.generic.validation);
       return;
     }
 
@@ -66,7 +66,7 @@ export const AddBreadPriceModal = ({ open, onOpenChange, onSuccess }: Props) => 
         price: Number(formData.price),
       });
 
-      toast.success("Bread price added successfully");
+      notify.success(messages.breadPrice.added);
       onSuccess(result.data);
 
       // Reset form
@@ -74,7 +74,7 @@ export const AddBreadPriceModal = ({ open, onOpenChange, onSuccess }: Props) => 
       setErrors({});
     } catch (error) {
       console.error("Error creating bread price:", error);
-      toast.error("Failed to add bread price");
+      notify.fromError(error, messages.breadPrice.addFailed);
     } finally {
       setIsSubmitting(false);
     }

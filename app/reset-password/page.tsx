@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/app/providers/auth-provider";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { LoaderCircle, LockKeyhole, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -41,11 +41,11 @@ const ResetPassword = () => {
     setLoading(true);
     try {
       await updateAppPassword(password);
-      toast.success("Password updated successfully!");
+      notify.success(messages.auth.passwordUpdated);
       router.push("/");
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message || "Failed to update password");
+      notify.fromError(error, messages.auth.passwordFailed);
     } finally {
       setLoading(false);
     }

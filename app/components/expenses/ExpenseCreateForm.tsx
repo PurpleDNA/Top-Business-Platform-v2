@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import z from "zod";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { formatDateTime, getTimeFrame } from "@/app/services/utils";
 import {
   Production,
@@ -71,7 +71,7 @@ const ExpenseCreateForm = () => {
           }));
         }
       } catch (error) {
-        toast.error("Failed to load productions");
+        notify.error(messages.generic.loadFailed);
         console.error(error);
       } finally {
         setIsLoading(false);
@@ -99,7 +99,7 @@ const ExpenseCreateForm = () => {
       });
 
       if (response.status === "SUCCESS") {
-        toast.success("Expense has been created successfully");
+        notify.success(messages.expense.created);
         // Reset form after successful submission
         setPayload({
           production_id: selectedProduction?.id || "",
@@ -112,10 +112,10 @@ const ExpenseCreateForm = () => {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         setErrors(fieldErrors as unknown as Record<string, string>);
-        toast.error("Validation error, check your input");
+        notify.error(messages.generic.validation);
         return { status: "ERROR", error: fieldErrors };
       } else {
-        toast.error("Unexpected error occurred");
+        notify.fromError(error, messages.expense.createFailed);
       }
     }
   }

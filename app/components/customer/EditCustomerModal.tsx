@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateCustomer, Customer } from "@/app/services/customers";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
 
 interface EditCustomerModalProps {
@@ -47,16 +47,13 @@ export const EditCustomerModal = ({
 
       const result = await updateCustomer(customer.id, payload);
 
-      if (result.status === "SUCCESS") {
-        toast.success("Customer updated successfully");
+      if (notifyResult(result, { success: messages.customer.updated, error: messages.customer.updateFailed })) {
         onOpenChange(false);
         router.refresh();
-      } else {
-        toast.error("Failed to update customer");
       }
     } catch (error) {
       console.error("Error updating customer:", error);
-      toast.error("An unexpected error occurred");
+      notify.fromError(error, messages.customer.updateFailed);
     } finally {
       setIsLoading(false);
     }

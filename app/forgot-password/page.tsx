@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/app/providers/auth-provider";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { LoaderCircle, Mail } from "lucide-react";
 import Link from "next/link";
 
@@ -20,10 +20,10 @@ const ForgotPassword = () => {
     try {
       await resetPassword(email);
       setSent(true);
-      toast.success("Password reset email sent!");
+      notify.success(messages.auth.resetEmailSent);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message || "Failed to send reset email");
+      notify.fromError(error, messages.auth.resetEmailFailed);
     } finally {
       setLoading(false);
     }

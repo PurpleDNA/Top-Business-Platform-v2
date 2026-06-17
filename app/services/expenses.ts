@@ -4,7 +4,6 @@ import { revalidateTag } from "next/cache";
 import { cache } from "react";
 import { checkProductionClosed } from "./productions";
 import { revalidateAllPaths } from "./revalidate";
-import { toast } from "sonner";
 
 export interface Expense {
   id: string;
@@ -70,9 +69,8 @@ export const updateExpense = async (
       existingExpense.production_id
     );
     if (closureCheck.isClosed) {
-      toast.error("Expense cannot be updated because the production is closed");
       throw new Error(
-        `Expense cannot be updated because the production is closed`
+        "This expense belongs to a closed production and can't be updated."
       );
     }
 
@@ -116,9 +114,8 @@ export const deleteExpense = async (expenseId: string) => {
       existingExpense.production_id
     );
     if (closureCheck.isClosed) {
-      toast.error("Expense cannot be deleted because the production is closed");
       throw new Error(
-        `Expense cannot be deleted because the production is closed`
+        "This expense belongs to a closed production and can't be deleted."
       );
     }
 

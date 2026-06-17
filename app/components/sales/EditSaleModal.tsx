@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
 import { getColorClasses } from "@/lib/utils";
 
@@ -87,19 +87,19 @@ export const EditSaleModal = ({
       const amountPaid = Number(formData.amount_paid);
 
       if (isNaN(amount) || amount <= 0) {
-        toast.error("Please enter a valid amount");
+        notify.error(messages.sale.invalidAmount);
         setLoading(false);
         return;
       }
 
       if (isNaN(amountPaid) || amountPaid < 0) {
-        toast.error("Please enter a valid amount paid");
+        notify.error(messages.sale.invalidAmountPaid);
         setLoading(false);
         return;
       }
 
       if (amountPaid > amount) {
-        toast.error("Amount paid cannot exceed total amount");
+        notify.error(messages.sale.overpayment);
         setLoading(false);
         return;
       }
@@ -119,20 +119,13 @@ export const EditSaleModal = ({
 
       const result = await updateSale(sale.id, payload);
 
-      if (result?.status === "SUCCESS") {
-        toast.success("Sale updated successfully");
+      if (notifyResult(result, { success: messages.sale.updated, error: messages.sale.updateFailed })) {
         onOpenChange(false);
         router.refresh();
-      } else {
-        toast.error(result?.error || "Failed to update sale");
       }
     } catch (error) {
       console.error("Error updating sale:", error);
-      if (typeof error === "string") {
-        toast.error(error);
-      } else {
-        toast.error("An unexpected error occurred");
-      }
+      notify.fromError(error, messages.sale.updateFailed);
     } finally {
       setLoading(false);
     }

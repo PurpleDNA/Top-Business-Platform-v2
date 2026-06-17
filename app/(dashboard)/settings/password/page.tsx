@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { updateUserPassword } from "@/app/services/users";
-import { toast } from "sonner";
+import { notify, getErrorMessage, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
 
 export default function ChangePasswordPage() {
@@ -35,16 +35,16 @@ export default function ChangePasswordPage() {
     try {
       const result = await updateUserPassword(newPassword);
       if (result.success) {
-        toast.success("Password updated successfully");
+        notify.success(messages.auth.passwordUpdated);
         setNewPassword("");
         setConfirmPassword("");
         setIsConfirmTouched(false);
         setIsNewTouched(false);
       } else {
-        toast.error(result.error || "Failed to update password");
+        notify.error(getErrorMessage(result.error, messages.auth.passwordFailed));
       }
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      notify.fromError(error, messages.auth.passwordFailed);
     } finally {
       setIsPending(false);
     }

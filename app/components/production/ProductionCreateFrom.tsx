@@ -3,7 +3,7 @@
 import React, { useActionState, useState, useMemo } from "react";
 import { createProduction } from "@/app/services/productions";
 import z from "zod";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -123,7 +123,7 @@ const ProductionFrom = ({ multipliers }: Props) => {
       await validateCreate.parseAsync(values);
       const response = await createProduction(payload);
       if (response.status === "SUCCESS") {
-        toast("Production has been created");
+        notify.success(messages.production.created);
         setPayload({
           quantity: { ...initialQuantity },
           total: "",
@@ -131,15 +131,18 @@ const ProductionFrom = ({ multipliers }: Props) => {
           bread_price: multipliers,
         });
         setShowOldBread(false);
+      } else {
+        notify.error(messages.production.createFailed);
       }
       return response;
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         setErrors(fieldErrors as unknown as Record<string, string>);
-        toast.error("Validation error, check your input");
+        notify.error(messages.generic.validation);
         return { status: "ERROR", error: fieldErrors };
       }
+      notify.fromError(error, messages.production.createFailed);
     }
     console.log(prevState);
   }

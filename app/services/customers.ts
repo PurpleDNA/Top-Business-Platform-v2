@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { createClient } from "@/supabase/server";
-import { toast } from "sonner";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { cache } from "react";
 import { revalidateAllPaths } from "./revalidate";

@@ -12,7 +12,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { deleteSale } from "@/app/services/sales";
 
@@ -40,8 +40,7 @@ export const DeleteSaleDialog = ({
     try {
       const result = await deleteSale(saleId);
 
-      if (result.status === "SUCCESS") {
-        toast.success("Sale deleted successfully");
+      if (notifyResult(result, { success: messages.sale.deleted, error: messages.sale.deleteFailed })) {
         onOpenChange(false);
 
         if (redirectOnDelete) {
@@ -49,12 +48,10 @@ export const DeleteSaleDialog = ({
         } else {
           router.refresh();
         }
-      } else {
-        toast.error(result?.error || "Failed to delete sale");
       }
     } catch (error) {
       console.error("Error deleting sale:", error);
-      toast.error("An unexpected error occurred");
+      notify.fromError(error, messages.sale.deleteFailed);
     } finally {
       setLoading(false);
     }

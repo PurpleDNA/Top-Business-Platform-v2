@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { updateProduction } from "@/app/services/productions";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
 
 interface CashInputProps {
@@ -33,7 +33,7 @@ export const CashInput = ({ productionId, initialCash }: CashInputProps) => {
 
     // Validate
     if (isNaN(newCash) || newCash < 0) {
-      toast.error("Please enter a valid cash amount");
+      notify.error(messages.production.invalidCash);
       setInputValue(String(cash));
       setIsEditing(false);
       return;
@@ -50,16 +50,14 @@ export const CashInput = ({ productionId, initialCash }: CashInputProps) => {
     try {
       const result = await updateProduction(productionId, { cash: newCash });
 
-      if (result.status === "SUCCESS") {
+      if (notifyResult(result, { success: messages.production.cashUpdated, error: messages.production.cashFailed })) {
         setCash(newCash);
-        toast.success("Cash updated successfully");
         router.refresh();
       } else {
-        toast.error("Failed to update cash");
         setInputValue(String(cash));
       }
     } catch (error) {
-      toast.error("An error occurred while updating cash");
+      notify.fromError(error, messages.production.cashFailed);
       setInputValue(String(cash));
     } finally {
       setIsLoading(false);

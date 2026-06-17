@@ -13,25 +13,22 @@ export const formatDate = (dateString: string) => {
   }
 };
 
-export const formatDateTime = (timestamp: any) => {
+export const formatDateTime = (
+  timestamp: string | number | Date | null | undefined,
+) => {
   if (!timestamp) return "No date";
 
   const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return "Invalid date";
 
-  // Check if date is valid
-  if (isNaN(date.getTime())) {
-    return "Invalid date";
-  }
-
-  // Get the formatted date
   const formattedDate = date.toLocaleDateString("en-GB", {
     weekday: "short",
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: "Africa/Lagos", // pin it — server and client now agree
   });
 
-  // Get the time period
   const timePeriod = getTimePeriod(timestamp);
 
   return `${formattedDate}, ${timePeriod}`;

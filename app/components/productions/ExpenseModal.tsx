@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AppWindow, LoaderCircle, X } from "lucide-react";
 import z from "zod";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -70,7 +70,7 @@ export const ExpenseModal = ({ productionId }: ExpenseModalProps) => {
       });
 
       if (response.status === "SUCCESS") {
-        toast.success("Expense has been created successfully");
+        notify.success(messages.expense.created);
         // Reset form
         setPayload({
           expense: "",
@@ -83,9 +83,9 @@ export const ExpenseModal = ({ productionId }: ExpenseModalProps) => {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         setErrors(fieldErrors as unknown as Record<string, string>);
-        toast.error("Validation error, check your input");
+        notify.error(messages.generic.validation);
       } else {
-        toast.error("Unexpected error occurred");
+        notify.fromError(error, messages.expense.createFailed);
       }
     } finally {
       setIsLoading(false);

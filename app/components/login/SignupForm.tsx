@@ -2,7 +2,7 @@
 import React, { useRef, useState } from "react";
 import { LoaderCircle, UserPlus2 } from "lucide-react";
 import { useAuth } from "@/app/providers/auth-provider";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { useRouter } from "next/navigation";
 import { createUser } from "@/app/services/auth";
 
@@ -178,8 +178,7 @@ const SignupForm: React.FC = () => {
       if (!!validateSubmit()) return;
       const authData = await signUpNewUser(payload);
 
-      toast("You have successfully signed up");
-      toast("logging you in");
+      notify.success(messages.auth.signupSuccess);
 
       await createUser(authData, payload);
       await signInWithEmail(payload);
@@ -187,7 +186,7 @@ const SignupForm: React.FC = () => {
       router.push("/");
     } catch (error) {
       console.log(error);
-      toast("Registration failed, please try again");
+      notify.fromError(error, messages.auth.signupFailed);
     } finally {
       setLoading(false);
     }

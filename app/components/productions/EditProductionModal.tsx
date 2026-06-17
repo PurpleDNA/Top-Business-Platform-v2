@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Production, updateProduction } from "@/app/services/productions";
 import { getBreadPriceMultipliers } from "@/app/services/bread_price";
-import { toast } from "sonner";
+import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
 import { getColorClasses } from "@/lib/utils";
 
@@ -114,16 +114,13 @@ export const EditProductionModal = ({
 
       const result = await updateProduction(production.id, payload);
 
-      if (result.status === "SUCCESS") {
-        toast.success("Production updated successfully");
+      if (notifyResult(result, { success: messages.production.updated, error: messages.production.updateFailed })) {
         onOpenChange(false);
         router.refresh();
-      } else {
-        toast.error(result.error || "Failed to update production");
       }
     } catch (error) {
       console.error("Error updating production:", error);
-      toast.error("An unexpected error occurred");
+      notify.fromError(error, messages.production.updateFailed);
     } finally {
       setIsLoading(false);
     }

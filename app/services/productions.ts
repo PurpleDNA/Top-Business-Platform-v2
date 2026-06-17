@@ -4,7 +4,6 @@ import { revalidateAllPaths } from "./revalidate";
 import { revalidatePath, updateTag } from "next/cache";
 import { cache } from "react";
 import { getBreadPriceMultipliers } from "./bread_price";
-import { toast } from "sonner";
 import { isSuperAdmin } from "./roles";
 
 export interface Production {
@@ -353,8 +352,7 @@ export const updateProduction = async (
     // Check if production is closed
     const closureCheck = await checkProductionClosed(productionId);
     if (closureCheck.isClosed) {
-      toast.error("Production cannot be updated because it is closed");
-      throw new Error(`Production cannot be updated because it is closed`);
+      throw new Error("This production is closed and can no longer be updated.");
     }
 
     const supabase = await createClient();
@@ -437,8 +435,7 @@ export const deleteProduction = async (productionId: string) => {
     // Check if production is closed
     const closureCheck = await checkProductionClosed(productionId);
     if (closureCheck.isClosed) {
-      toast.error("Production cannot be deleted because it is closed");
-      throw new Error(`Production cannot be deleted because it is closed`);
+      throw new Error("This production is closed and can no longer be deleted.");
     }
 
     const supabase = await createClient();

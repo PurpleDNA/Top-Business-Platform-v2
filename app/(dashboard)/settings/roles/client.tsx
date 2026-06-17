@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, Shield, User as UserIcon } from "lucide-react";
-import { toast } from "sonner";
+import { notify, messages } from "@/lib/notifications";
 import { useRouter } from "next/navigation";
 import { DeleteUserDialog } from "./DeleteUserDialog";
 
@@ -96,11 +96,11 @@ export default function UserManagementClient({
         throw new Error(res.error);
       }
 
-      toast.success("User created successfully");
+      notify.success(messages.user.created);
       setIsAddOpen(false);
       router.refresh(); // Refresh server data
     } catch (error: any) {
-      toast.error(error.message || "Failed to create user");
+      notify.fromError(error, messages.user.createFailed);
     } finally {
       setIsLoading(false);
     }
@@ -124,12 +124,12 @@ export default function UserManagementClient({
         throw new Error(res.error);
       }
 
-      toast.success("User updated successfully");
+      notify.success(messages.user.updated);
       setIsEditOpen(false);
       setEditingUser(null);
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Failed to update user");
+      notify.fromError(error, messages.user.updateFailed);
     } finally {
       setIsLoading(false);
     }
@@ -148,11 +148,11 @@ export default function UserManagementClient({
       if (!res.success) {
         throw new Error(res.error);
       }
-      toast.success("User deleted successfully");
+      notify.success(messages.user.deleted);
       setDeletingUser(null);
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Failed to delete user");
+      notify.fromError(error, messages.user.deleteFailed);
       throw error;
     }
   };
