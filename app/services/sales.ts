@@ -103,13 +103,11 @@ export const fetchFilteredSales = async (
     });
 
     if (error) {
-      console.error("Error fetching filtered sales:", error);
       return [];
     }
 
     return (data as unknown as FilteredSale[]) || [];
-  } catch (error) {
-    console.error("Unexpected error in fetchFilteredSales:", error);
+  } catch {
     return [];
   }
 };
@@ -124,12 +122,10 @@ export const fetchAllSales = async (page: number, limit: number) => {
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
     if (error) {
-      console.error("Error fetching sales:", error);
       return [];
     }
     return sales;
-  } catch (error) {
-    console.error("Unexpected error in fetchAllSales:", error);
+  } catch {
     return [];
   }
 };
@@ -166,13 +162,11 @@ export const fetchAllSalesWithDetails = async (page: number, limit: number) => {
       .range(offset, offset + limit - 1);
 
     if (error) {
-      console.error("Error fetching sales with details:", error);
       return [];
     }
 
     return (sales as unknown as SaleWithDetails[]) || [];
-  } catch (error) {
-    console.error("Unexpected error in fetchAllSalesWithDetails:", error);
+  } catch {
     return [];
   }
 };
@@ -187,13 +181,11 @@ export const fetchSalesByCustomerId = async (customerId: string) => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching sales by customer ID:", error);
       return [];
     }
 
     return sales;
-  } catch (error) {
-    console.error("Unexpected error in fetchSalesByCustomerId:", error);
+  } catch {
     return [];
   }
 };
@@ -212,8 +204,7 @@ export const fetchSaleById = async (saleId: string) => {
     }
 
     return sale;
-  } catch (error) {
-    console.error("Unexpected error in fetchSaleById:", error);
+  } catch {
     return [];
   }
 };
@@ -236,13 +227,11 @@ export const fetchSalesByProductionId = cache(async (productionId: string) => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching sales with customer:", error);
       return [];
     }
 
     return (sales as unknown as SaleWithCustomer[]) || [];
-  } catch (error) {
-    console.error("Unexpected error in fetchSalesByProductionId:", error);
+  } catch {
     return [];
   }
 });
@@ -270,7 +259,6 @@ export const createSaleWithPaymentAndInventory = async (
     );
 
     if (error) {
-      console.error("create_sale_with_payment_and_inventory error:", error);
       throw new Error(error.message || "Failed to create sale");
     }
 
@@ -285,8 +273,7 @@ export const createSaleWithPaymentAndInventory = async (
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "", data };
-  } catch (error) {
-    console.log("create sale error>>>>>>", error);
+  } catch {
     throw new Error("Unexpected Error Occured");
   }
 };
@@ -313,7 +300,6 @@ export const createNewSale = async (payload: CreateSale) => {
       .single();
 
     if (error) {
-      console.log(error);
       throw new Error("Create Sale Error");
     }
 
@@ -323,8 +309,7 @@ export const createNewSale = async (payload: CreateSale) => {
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "", res: saleData };
-  } catch (error) {
-    console.log("create sale error>>>>>>", error);
+  } catch {
     throw new Error("Unexpected Error Occured");
   }
 };
@@ -343,8 +328,7 @@ export const getUnpaidSalesByCustomerId = async (customerId: string) => {
       throw new Error("get unpaid sales error");
     }
     return { status: "SUCCESS", error: "", data: unpaidSales };
-  } catch (error) {
-    console.log("get unpaid sales error >>>>>>", error);
+  } catch {
     throw new Error("Unexpected Error Occured");
   }
 };
@@ -395,7 +379,6 @@ export const deleteSale = async (saleId: string) => {
     });
 
     if (error) {
-      console.error("delete_sale_atomic error:", error);
       throw new Error(error.message || "Failed to delete sale");
     }
 

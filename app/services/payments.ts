@@ -42,13 +42,11 @@ export async function getPaymentById(paymentId: string) {
       .single();
 
     if (error) {
-      console.error("Error fetching payment by ID:", error);
       return null;
     }
 
     return payment;
-  } catch (error) {
-    console.error("Unexpected error in getPaymentById:", error);
+  } catch {
     return null;
   }
 }
@@ -105,13 +103,11 @@ export const fetchFilteredPayments = async (
     });
 
     if (error) {
-      console.error("Error fetching filtered payments:", error);
       return [];
     }
 
     return (data as unknown as FilteredPayment[]) || [];
-  } catch (error) {
-    console.error("Unexpected error in fetchFilteredPayments:", error);
+  } catch {
     return [];
   }
 };
@@ -151,13 +147,11 @@ export const fetchAllPaymentsWithDetails = async (
       .range(offset, offset + limit - 1);
 
     if (error) {
-      console.error("Error fetching payments with details:", error);
       return [];
     }
 
     return (payments as unknown as PaymentWithDetails[]) || [];
-  } catch (error) {
-    console.error("Unexpected error in fetchAllPaymentsWithDetails:", error);
+  } catch {
     return [];
   }
 };
@@ -180,13 +174,11 @@ export async function getPaymentsByCustomerID(
       .select();
 
     if (error) {
-      console.error("Error fetching customer by ID:", error);
       return null;
     }
 
     return payments;
-  } catch (error) {
-    console.error("Unexpected error in fetchCustomerById:", error);
+  } catch {
     return null;
   }
 }
@@ -215,7 +207,6 @@ export const createPaymentForSale = async (
     );
 
     if (error) {
-      console.error("create_payment_for_sale_atomic error:", error);
       throw new Error(error.message || "Failed to create payment");
     }
 
@@ -227,8 +218,7 @@ export const createPaymentForSale = async (
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "", data };
-  } catch (error) {
-    console.error("Unexpected error in createPaymentForSale:", error);
+  } catch {
     throw new Error("Unexpected Error Occured");
   }
 };
@@ -252,13 +242,11 @@ export async function addPayment(payload: Create) {
       .select();
 
     if (error) {
-      console.error("Add Payment Error:", error);
       throw new Error("Database Error Occured");
     }
     await revalidateAllPaths();
     return { status: "SUCCESS", error: "", res: paymentData[0] };
   } catch (error) {
-    console.error("Unexpected error in Add Payment:", error);
     throw error;
   }
 }
@@ -301,7 +289,6 @@ export async function distributePaymentAcrossSales(
     );
 
     if (error) {
-      console.error("Distribute Payment Error:", error);
       throw new Error("Failed to distribute payment: " + error.message);
     }
 
@@ -313,7 +300,6 @@ export async function distributePaymentAcrossSales(
       data: data as DistributePaymentResult,
     };
   } catch (error) {
-    console.error("Unexpected error in distributePaymentAcrossSales:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unexpected error occurred";
     return {
@@ -340,7 +326,6 @@ export const updatePayment = async (
     });
 
     if (error) {
-      console.error("update_payment_atomic error:", error);
       throw new Error(error.message || "Failed to update payment");
     }
 
@@ -371,7 +356,6 @@ export const deletePayment = async (paymentId: string) => {
     });
 
     if (error) {
-      console.error("delete_payment_atomic error:", error);
       throw new Error(error.message || "Failed to delete payment");
     }
 

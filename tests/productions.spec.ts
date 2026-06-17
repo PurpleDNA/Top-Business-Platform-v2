@@ -9,7 +9,6 @@ test.describe('Production Operations', () => {
   test('should complete full production lifecycle', async ({ page }) => {
     // --- 1. Create Production ---
     await page.goto('/production/new');
-    console.log(`Current URL: ${page.url()}`);
     
     // Fill in quantities
     // Using names based on ProductionCreateFrom.tsx

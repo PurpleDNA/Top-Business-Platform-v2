@@ -185,7 +185,6 @@ const SignupForm: React.FC = () => {
 
       router.push("/");
     } catch (error) {
-      console.log(error);
       notify.fromError(error, messages.auth.signupFailed);
     } finally {
       setLoading(false);

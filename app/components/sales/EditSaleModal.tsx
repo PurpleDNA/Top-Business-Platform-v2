@@ -125,7 +125,6 @@ export const EditSaleModal = ({
         router.refresh();
       }
     } catch (error) {
-      console.error("Error updating sale:", error);
       notify.fromError(error, messages.sale.updateFailed);
     } finally {
       setLoading(false);

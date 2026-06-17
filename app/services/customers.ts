@@ -35,13 +35,11 @@ export const fetchAllCustomers = cache(async (): Promise<Customer[] | []> => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching customers:", error);
       return [];
     }
 
     return customers;
-  } catch (error) {
-    console.error("Unexpected error in fetchAllCustomers:", error);
+  } catch {
     return [];
   }
 });
@@ -56,8 +54,7 @@ export const getCustomerCount = async () => {
       throw error;
     }
     return count;
-  } catch (error) {
-    console.error("getCustomerCount Error>>>>>", error);
+  } catch {
   }
 };
 
@@ -71,13 +68,11 @@ export const fetchCustomerById = async (id: string) => {
       .single();
 
     if (error) {
-      console.error("Error fetching customer by ID:", error);
       return null;
     }
 
     return customer;
-  } catch (error) {
-    console.error("Unexpected error in fetchCustomerById:", error);
+  } catch {
     return null;
   }
 };
@@ -95,8 +90,7 @@ export const fetchCustomerTotalSpent = async (customerId: string) => {
       throw error;
     }
     return data;
-  } catch (error) {
-    console.error("Error fetching total customer spent:", error);
+  } catch {
     return 0;
   }
 };
@@ -116,8 +110,7 @@ export const fetchCustomerMonthlyPurchases = async (customerId: string) => {
     }
 
     return data || [];
-  } catch (error) {
-    console.error("Error fetching customer monthly purchases:", error);
+  } catch {
     return [];
   }
 };
@@ -143,8 +136,7 @@ export const createCustomer = async (payload: Create) => {
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "", res: customerData[0] };
-  } catch (error) {
-    console.log("create customer error>>>>>>>>", error);
+  } catch {
     throw new Error("Unexpected Error Occured");
   }
 };
@@ -161,13 +153,11 @@ export const searchCustomers = async (searchTerm: string) => {
     });
 
     if (error) {
-      console.error("Error searching customers:", error);
       return [];
     }
 
     return data || [];
-  } catch (error) {
-    console.error("Search failed:", error);
+  } catch {
     return [];
   }
 };
@@ -191,8 +181,7 @@ export const updateCustomer = async (
     revalidateTag("customers", {});
     await revalidateAllPaths();
     return { status: "SUCCESS", error: "", res: UpdatedData };
-  } catch (error) {
-    console.log("update customer error>>>>>>>>:", error);
+  } catch {
     throw new Error("Unexpected Error Occured");
   }
 };
@@ -213,8 +202,7 @@ export const deleteCustomer = async (customerId: string) => {
     revalidateTag("customers_count", {});
     await revalidateAllPaths();
     return { status: "SUCCESS", error: "" };
-  } catch (error) {
-    console.log("delete customer error>>>>>>>>:", error);
+  } catch {
     throw new Error("Unexpected Error Occured");
   }
 };

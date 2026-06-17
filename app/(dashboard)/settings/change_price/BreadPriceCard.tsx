@@ -35,7 +35,6 @@ export const BreadPriceCard = ({
       notify.success(messages.breadPrice.deleted);
       onDelete(id);
     } catch (error) {
-      console.error("Error deleting price:", error);
       notify.fromError(error, messages.breadPrice.deleteFailed);
       throw error;
     }

@@ -50,7 +50,6 @@ export const DeleteSaleDialog = ({
         }
       }
     } catch (error) {
-      console.error("Error deleting sale:", error);
       notify.fromError(error, messages.sale.deleteFailed);
     } finally {
       setLoading(false);

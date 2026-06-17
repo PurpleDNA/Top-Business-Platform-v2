@@ -74,7 +74,6 @@ export const EditBreadPriceModal = ({
       notify.success(messages.breadPrice.updated);
       onSuccess(result.data);
     } catch (error) {
-      console.error("Error updating bread price:", error);
       notify.fromError(error, messages.breadPrice.updateFailed);
     } finally {
       setIsSubmitting(false);

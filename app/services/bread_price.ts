@@ -34,13 +34,11 @@ export const fetchAllBreadPrices = async (): Promise<BreadPrice[]> => {
       .order("id", { ascending: false });
 
     if (error) {
-      console.error("Error fetching bread prices:", error);
       return [];
     }
 
     return breadPrices || [];
-  } catch (error) {
-    console.error("Unexpected error in fetchAllBreadPrices:", error);
+  } catch {
     return [];
   }
 };
@@ -60,13 +58,11 @@ export const fetchBreadPriceById = async (
       .single();
 
     if (error) {
-      console.error("Error fetching bread price by ID:", error);
       return null;
     }
 
     return breadPrice;
-  } catch (error) {
-    console.error("Unexpected error in fetchBreadPriceById:", error);
+  } catch {
     return null;
   }
 };
@@ -91,7 +87,6 @@ export const createBreadPrice = async (payload: CreateBreadPrice) => {
       .select();
 
     if (error) {
-      console.error("Create Bread Price Error:", error);
       throw new Error("Failed to create bread price");
     }
 
@@ -100,7 +95,6 @@ export const createBreadPrice = async (payload: CreateBreadPrice) => {
 
     return { status: "SUCCESS", error: "", data: breadPriceData[0] };
   } catch (error) {
-    console.error("Unexpected error in createBreadPrice:", error);
     throw new Error(String(error));
   }
 };
@@ -126,7 +120,6 @@ export const updateBreadPrice = async (
       .select();
 
     if (error) {
-      console.error("Update Bread Price Error:", error);
       throw new Error("Failed to update bread price");
     }
 
@@ -135,7 +128,6 @@ export const updateBreadPrice = async (
 
     return { status: "SUCCESS", error: "", data: updatedBreadPrice[0] };
   } catch (error) {
-    console.error("Unexpected error in updateBreadPrice:", error);
     throw new Error(String(error));
   }
 };
@@ -157,7 +149,6 @@ export const deleteBreadPrice = async (breadPriceId: number) => {
       .eq("id", breadPriceId);
 
     if (error) {
-      console.error("Delete Bread Price Error:", error);
       throw new Error("Failed to delete bread price");
     }
 
@@ -166,7 +157,6 @@ export const deleteBreadPrice = async (breadPriceId: number) => {
 
     return { status: "SUCCESS", error: "" };
   } catch (error) {
-    console.error("Unexpected error in deleteBreadPrice:", error);
     throw new Error(String(error));
   }
 };
@@ -182,13 +172,11 @@ export const getBreadPriceCount = async (): Promise<number> => {
       .select("*", { count: "exact", head: true });
 
     if (error) {
-      console.error("Error getting bread price count:", error);
       return 0;
     }
 
     return count || 0;
-  } catch (error) {
-    console.error("Unexpected error in getBreadPriceCount:", error);
+  } catch {
     return 0;
   }
 };
@@ -207,8 +195,7 @@ export const getBreadPriceMultipliers = cache(
       });
 
       return multipliers;
-    } catch (error) {
-      console.error("Unexpected error in getBreadPriceMultipliers:", error);
+    } catch {
       return {};
     }
   }

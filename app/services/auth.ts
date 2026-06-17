@@ -16,7 +16,6 @@ export const createUser = async (authData: any, payload: any) => {
     if (userError) {
       throw new Error("User profile error:", userError);
     }
-  } catch (error) {
-    console.log(error);
+  } catch {
   }
 };

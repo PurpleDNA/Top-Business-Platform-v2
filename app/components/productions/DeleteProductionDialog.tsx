@@ -49,7 +49,6 @@ export const DeleteProductionDialog = ({
         }
       }
     } catch (error) {
-      console.error("Error deleting production:", error);
       notify.fromError(error, messages.production.deleteFailed);
     } finally {
       setIsLoading(false);

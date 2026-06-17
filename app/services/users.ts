@@ -27,7 +27,6 @@ export async function getUsers() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching users:", error);
     return [];
   }
 
@@ -94,7 +93,6 @@ export async function createUser(payload: {
     revalidatePath("/settings/roles");
     return { success: true };
   } catch (error: any) {
-    console.error("Create User Error:", error);
     return { success: false, error: error.message };
   }
 }
@@ -160,7 +158,6 @@ export async function deleteUser(id: string) {
     if (profileError) {
       // If we can't delete the profile, it might be referenced by other tables (though we checked and didn't find any).
       // Or it could be an RLS issue, but we are using adminAuthClient.
-      console.error("Failed to delete user profile:", profileError);
       throw new Error(
         `Failed to delete user profile: ${profileError.message}. User might have associated data preventing deletion.`
       );
@@ -173,14 +170,12 @@ export async function deleteUser(id: string) {
       // If auth delete fails, we might leave the user without a profile (orphan auth user).
       // This is less critical than an orphan profile, but still not ideal.
       // Ideally we would wrap this in a transaction if we could.
-      console.error("Failed to delete auth user:", error);
       throw error;
     }
 
     revalidatePath("/settings/roles");
     return { success: true };
   } catch (error: any) {
-    console.log("ERROR_DELETING_USER>>>>>>>>>>>", error);
     return { success: false, error: error.message };
   }
 }
@@ -194,7 +189,6 @@ export async function updateUserPassword(password: string) {
 
     return { success: true };
   } catch (error: any) {
-    console.error("Error updating password:", error);
     return { success: false, error: error.message };
   }
 }

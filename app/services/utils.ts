@@ -33,8 +33,7 @@ export const formatDate = (dateString: string) => {
       day: "numeric",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
-  } catch (error) {
-    console.error("Error formatting date:", error);
+  } catch {
     return dateString;
   }
 };

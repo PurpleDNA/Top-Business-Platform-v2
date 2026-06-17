@@ -8,7 +8,6 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !supabaseServiceRoleKey) {
   // We don't throw immediately to allow build time to pass, but it will fail at runtime if used.
-  console.warn("Missing Supabase Service Role Key or URL for Admin Client");
 }
 
 export const adminAuthClient = createClient(supabaseUrl, supabaseServiceRoleKey, {

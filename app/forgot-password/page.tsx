@@ -8,7 +8,6 @@ import Link from "next/link";
 
 const ForgotPassword = () => {
   const { resetPassword } = useAuth();
-  console.log("ForgotPassword auth context:", { resetPassword });
   
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,7 +21,6 @@ const ForgotPassword = () => {
       setSent(true);
       notify.success(messages.auth.resetEmailSent);
     } catch (error: any) {
-      console.error(error);
       notify.fromError(error, messages.auth.resetEmailFailed);
     } finally {
       setLoading(false);

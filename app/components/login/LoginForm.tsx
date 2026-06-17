@@ -56,7 +56,6 @@ const LoginForm = ({ user }: { user: any }) => {
       notify.success(messages.auth.loginSuccess);
       router.push("/");
     } catch (error) {
-      console.log(error);
       notify.fromError(error, messages.auth.loginFailed);
     } finally {
       setLoading(false);

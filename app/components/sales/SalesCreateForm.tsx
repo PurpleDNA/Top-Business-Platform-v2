@@ -137,8 +137,7 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
         if (cancelled) return;
         setSearchResuls(results);
         setShowResults(true);
-      } catch (error) {
-        console.log(error);
+      } catch {
       } finally {
         if (!cancelled) setSearching(false);
       }
@@ -257,7 +256,6 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
         return { status: "ERROR", error: fieldErrors };
       } else {
         notify.fromError(error, messages.sale.createFailed);
-        console.error("Sale creation error:", error);
         return { status: "ERROR", error: String(error) };
       }
     }
@@ -463,7 +461,6 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
           id="paid-switch"
           checked={payload.paid}
           onCheckedChange={(isPaid) => {
-            console.log(isPaid);
             setPayload((prev) => ({
               ...prev,
               paid: isPaid,

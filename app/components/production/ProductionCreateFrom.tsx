@@ -36,7 +36,6 @@ const ProductionFrom = ({ multipliers }: Props) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showOldBread, setShowOldBread] = useState(false);
 
-  console.log(multipliers);
 
   // Initialize state dynamically based on multipliers
   const initialQuantity = useMemo(() => {
@@ -144,7 +143,6 @@ const ProductionFrom = ({ multipliers }: Props) => {
       }
       notify.fromError(error, messages.production.createFailed);
     }
-    console.log(prevState);
   }
 
   const [state, formAction, isPending] = useActionState(handleSubmit, {

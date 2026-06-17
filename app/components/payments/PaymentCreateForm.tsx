@@ -68,8 +68,7 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
         try {
           const result = await getUnpaidSalesByCustomerId(selected.customer.id);
           setUnpaidSales(result.data || []);
-        } catch (error) {
-          console.error("Error fetching unpaid sales:", error);
+        } catch {
           setUnpaidSales([]);
         } finally {
           setLoadingSales(false);
@@ -110,8 +109,7 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
         if (cancelled) return;
         setSearchResuls(results);
         setShowResults(true);
-      } catch (error) {
-        console.log(error);
+      } catch {
       } finally {
         if (!cancelled) setSearching(false);
       }
@@ -174,8 +172,8 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
   }
 
   const handleClick = (customer: Customer) => {
-    console.log("Selected customer:", customer); // Debug: check customer data
-    console.log("Customer total_debt:", customer.total_debt); // Debug: check total_debt
+ // Debug: check customer data
+ // Debug: check total_debt
     handleSelected(customer);
     setShouldSearch(false); // Prevent search when selecting from dropdown
     setCustomerSearchValue(customer.name);
@@ -261,7 +259,6 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
         return response;
       }
     } catch (error) {
-      console.error("Payment creation error:", error);
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         setErrors(fieldErrors as unknown as Record<string, string>);

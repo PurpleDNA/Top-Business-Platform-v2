@@ -49,7 +49,6 @@ export const DeleteCustomerDialog = ({
         }
       }
     } catch (error) {
-      console.error("Error deleting customer:", error);
       notify.fromError(error, messages.customer.deleteFailed);
     } finally {
       setIsLoading(false);

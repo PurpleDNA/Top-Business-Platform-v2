@@ -10,8 +10,7 @@ export const getTotalBusinessOutstanding = async () => {
       throw error;
     }
     return data;
-  } catch (error) {
-    console.error("Error fetching total business outstanding:", error);
+  } catch {
     return 0;
   }
 };

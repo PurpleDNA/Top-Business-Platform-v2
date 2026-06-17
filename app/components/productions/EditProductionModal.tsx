@@ -119,7 +119,6 @@ export const EditProductionModal = ({
         router.refresh();
       }
     } catch (error) {
-      console.error("Error updating production:", error);
       notify.fromError(error, messages.production.updateFailed);
     } finally {
       setIsLoading(false);

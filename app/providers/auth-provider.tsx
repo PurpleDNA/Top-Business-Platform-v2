@@ -125,7 +125,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (error) {
-      console.error("Error signing in with Google:", error.message);
     }
   };
 
@@ -161,7 +160,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("Error signing out:", error.message);
     }
     // window.location.replace("http://localhost:3000/login");
   };

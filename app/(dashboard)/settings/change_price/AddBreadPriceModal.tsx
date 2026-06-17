@@ -73,7 +73,6 @@ export const AddBreadPriceModal = ({ open, onOpenChange, onSuccess }: Props) => 
       setFormData({ color: "", price: "" });
       setErrors({});
     } catch (error) {
-      console.error("Error creating bread price:", error);
       notify.fromError(error, messages.breadPrice.addFailed);
     } finally {
       setIsSubmitting(false);

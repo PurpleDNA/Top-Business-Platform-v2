@@ -75,7 +75,6 @@ export const EditPaymentModal = ({
         router.refresh();
       }
     } catch (error) {
-      console.error("Error updating payment:", error);
       notify.fromError(error, messages.payment.updateFailed);
     } finally {
       setLoading(false);

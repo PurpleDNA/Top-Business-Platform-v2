@@ -92,7 +92,6 @@ export const createProduction = async (payload: Create) => {
 
     return { status: "SUCCESS", error: "", res: ProductionData[0] };
   } catch (error) {
-    console.log("create production error>>>>>>>>:", error);
     throw new Error(String(error));
   }
 };
@@ -107,17 +106,14 @@ export const getLatestProduction = cache(async () => {
       .limit(1);
 
     if (error) {
-      console.error("GET_LATEST_PRODUCTION_QUERY_ERROR:", error);
       throw error;
     }
-    console.log(lastProduction[0]);
     if (lastProduction && lastProduction.length > 0) {
       return lastProduction[0];
     } else {
       return null;
     }
   } catch (error) {
-    console.error("getLatestProduction Error>>>>>>>", error);
     throw new Error(String(error));
   }
 });
@@ -132,13 +128,11 @@ export const getLast10Productions = cache(async () => {
       .limit(10);
 
     if (error) {
-      console.error("GET_LAST_10_PRODUCTIONS_ERROR:", error);
       throw error;
     }
 
     return last10;
   } catch (error) {
-    console.error("getLast10 Error>>>>>>>", error);
     throw new Error(String(error));
   }
 });
@@ -152,13 +146,11 @@ export const getProductionById = async (id: string) => {
       .eq("id", id)
       .single();
     if (error) {
-      console.error("Error fetching production by ID:", error);
       return null;
     }
 
     return production;
-  } catch (error) {
-    console.error("Unexpected error in fetchProductionById:", error);
+  } catch {
     return null;
   }
 };
@@ -195,7 +187,6 @@ export const checkProductionClosed = async (
 
     return { isClosed: false, error: null };
   } catch (error) {
-    console.error("Error checking production closure:", error);
     return {
       isClosed: true,
       error: "Failed to verify production status",
@@ -213,13 +204,11 @@ export const fetchAllProductions = cache(
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching productions:", error);
         return [];
       }
 
       return productions;
-    } catch (error) {
-      console.error("Unexpected error in fetchAllProductions:", error);
+    } catch {
       return [];
     }
   },
@@ -246,7 +235,6 @@ export const getProductionOutstanding = async (productionId: string) => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching production outstanding:", error);
       return null;
     }
 
@@ -260,8 +248,7 @@ export const getProductionOutstanding = async (productionId: string) => {
       })) || [];
 
     return transformed;
-  } catch (error) {
-    console.error("Unexpected error in getProductionOutstanding:", error);
+  } catch {
     return null;
   }
 };
@@ -286,7 +273,6 @@ export const getProductionPaidOutstanding = async (productionId: string) => {
       .order("paid_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching production paid outstanding:", error);
       return null;
     }
 
@@ -299,8 +285,7 @@ export const getProductionPaidOutstanding = async (productionId: string) => {
       })) || [];
 
     return transformed;
-  } catch (error) {
-    console.error("Unexpected error in getProductionPaidOutstanding:", error);
+  } catch {
     return null;
   }
 };
@@ -324,7 +309,6 @@ export const toggleProdStatus = async (productionId: string) => {
     );
 
     if (error) {
-      console.error("toggle_production_status_atomic error:", error);
       throw new Error(error.message || "Failed to toggle production status");
     }
 
@@ -339,7 +323,6 @@ export const toggleProdStatus = async (productionId: string) => {
       newStatus: data.new_status,
     };
   } catch (error) {
-    console.error("Unexpected error in toggleProdStatus:", error);
     return { status: "ERROR", error: String(error) };
   }
 };
@@ -365,7 +348,6 @@ export const updateProduction = async (
       .select();
 
     if (error) {
-      console.error("Error updating production:", error);
       throw new Error("Failed to update production");
     }
     revalidatePath("/productions/all");
@@ -376,7 +358,6 @@ export const updateProduction = async (
 
     return { status: "SUCCESS", data: updatedProduction[0] };
   } catch (error) {
-    console.error("Unexpected error in updateProduction:", error);
     return { status: "ERROR", error: String(error) };
   }
 };
@@ -390,9 +371,6 @@ export const updateSoldBread = async (
   _productionId: string,
   _soldQuantity: Record<string, number>,
 ) => {
-  console.warn(
-    "updateSoldBread is deprecated. The database trigger handles sold_bread updates automatically.",
-  );
   // Return success immediately since the trigger handles this
   return {
     status: "SUCCESS",
@@ -426,8 +404,7 @@ export const calculateBreadTotal = async (
     });
 
     return total;
-  } catch (error) {
-    console.error("Error calculating bread total:", error);
+  } catch {
     return 0;
   }
 };
@@ -460,8 +437,7 @@ export const deleteProduction = async (productionId: string) => {
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "" };
-  } catch (error) {
-    console.log("delete production error>>>>>>>>:", error);
+  } catch {
     throw new Error("Unexpected Error Occured");
   }
 };

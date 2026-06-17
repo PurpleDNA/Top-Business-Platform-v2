@@ -44,7 +44,6 @@ const ResetPassword = () => {
       notify.success(messages.auth.passwordUpdated);
       router.push("/");
     } catch (error: any) {
-      console.error(error);
       notify.fromError(error, messages.auth.passwordFailed);
     } finally {
       setLoading(false);

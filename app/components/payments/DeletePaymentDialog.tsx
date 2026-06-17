@@ -53,7 +53,6 @@ export const DeletePaymentDialog = ({
         }
       }
     } catch (error) {
-      console.error("Error deleting payment:", error);
       notify.fromError(error, messages.payment.deleteFailed);
     } finally {
       setLoading(false);

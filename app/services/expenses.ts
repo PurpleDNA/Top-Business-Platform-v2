@@ -33,7 +33,6 @@ export const createExpense = async (payload: CreateExpense) => {
       .select();
 
     if (error) {
-      console.error("Create Expense Error:", error);
       throw new Error("Failed to create expense");
     }
 
@@ -42,7 +41,6 @@ export const createExpense = async (payload: CreateExpense) => {
 
     return { status: "SUCCESS", error: "", data: expenseData[0] };
   } catch (error) {
-    console.error("Unexpected error in createExpense:", error);
     throw new Error(String(error));
   }
 };
@@ -81,7 +79,6 @@ export const updateExpense = async (
       .select();
 
     if (error) {
-      console.error("Update Expense Error:", error);
       throw new Error("Failed to update expense");
     }
 
@@ -90,7 +87,6 @@ export const updateExpense = async (
 
     return { status: "SUCCESS", error: "", data: updatedExpense[0] };
   } catch (error) {
-    console.error("Unexpected error in updateExpense:", error);
     throw new Error(String(error));
   }
 };
@@ -125,7 +121,6 @@ export const deleteExpense = async (expenseId: string) => {
       .eq("id", expenseId);
 
     if (error) {
-      console.error("Delete Expense Error:", error);
       throw new Error("Failed to delete expense");
     }
 
@@ -134,7 +129,6 @@ export const deleteExpense = async (expenseId: string) => {
 
     return { status: "SUCCESS", error: "" };
   } catch (error) {
-    console.error("Unexpected error in deleteExpense:", error);
     throw new Error(String(error));
   }
 };
@@ -150,13 +144,11 @@ export const getExpensesByProdId = cache(
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching expenses:", error);
         return [];
       }
 
       return expenses || [];
-    } catch (error) {
-      console.error("Unexpected error in getExpensesByProdId:", error);
+    } catch {
       return [];
     }
   }

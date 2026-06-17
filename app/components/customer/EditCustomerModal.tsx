@@ -52,7 +52,6 @@ export const EditCustomerModal = ({
         router.refresh();
       }
     } catch (error) {
-      console.error("Error updating customer:", error);
       notify.fromError(error, messages.customer.updateFailed);
     } finally {
       setIsLoading(false);

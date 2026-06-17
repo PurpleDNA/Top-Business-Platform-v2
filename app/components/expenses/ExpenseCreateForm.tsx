@@ -72,7 +72,6 @@ const ExpenseCreateForm = () => {
         }
       } catch (error) {
         notify.error(messages.generic.loadFailed);
-        console.error(error);
       } finally {
         setIsLoading(false);
       }

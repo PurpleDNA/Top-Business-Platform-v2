@@ -74,8 +74,7 @@ export const DashboardHeader = ({ profile }: { profile: any }) => {
       const results = (await searchCustomers(search)) as Customer[];
       setSearchResults(results);
       setShowResults(true);
-    } catch (error) {
-      console.log(error);
+    } catch {
     } finally {
       setSearching(false);
     }

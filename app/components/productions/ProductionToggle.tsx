@@ -36,9 +36,6 @@ export const ProductionToggle = ({
           setIsOpen(result.newStatus);
           notify.success(messages.production.statusToggled(result.newStatus));
         } else {
-          console.warn(
-            "toggleProdStatus returned undefined newStatus, skipping optimistic update."
-          );
           notify.success(messages.production.statusToggled(!isOpen));
         }
 
@@ -47,11 +44,9 @@ export const ProductionToggle = ({
           router.refresh();
         });
       } else {
-        console.error("Toggle failed:", result.error);
         notify.error(messages.production.statusFailed);
       }
     } catch (error) {
-      console.error("Unexpected error toggling production status:", error);
       notify.fromError(error, messages.production.statusFailed);
     } finally {
       setIsLoading(false);
