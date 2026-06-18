@@ -234,6 +234,9 @@ export const messages = {
     cashUpdated: "Cash at hand updated successfully.",
     cashFailed: "Couldn't update cash at hand. Please try again.",
     invalidCash: "Enter a valid cash amount.",
+    transferUpdated: "Transfer updated successfully.",
+    transferFailed: "Couldn't update transfer. Please try again.",
+    invalidTransfer: "Enter a valid transfer amount.",
     statusToggled: (open: boolean) =>
       open ? "Production reopened." : "Production closed.",
     statusFailed: "Couldn't change the production status. Please try again.",

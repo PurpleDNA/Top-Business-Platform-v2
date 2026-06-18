@@ -16,6 +16,7 @@ import { formatNaira, formatNumber } from "@/app/services/utils";
 
 interface FinancialSummaryProps {
   cash: number;
+  transfer: number;
   totalExpenses: number;
   totalOutstanding: number;
   remainingBreadTotal: number;
@@ -29,6 +30,7 @@ interface FinancialSummaryProps {
 
 export const FinancialSummary = ({
   cash,
+  transfer,
   totalExpenses,
   totalOutstanding,
   remainingBreadTotal,
@@ -87,6 +89,17 @@ export const FinancialSummary = ({
             </div>
             <span className="text-sm font-semibold text-foreground">
               {formatNaira(cash)}
+            </span>
+          </div>
+
+          {/* Transfer */}
+          <div className="flex items-center justify-between pb-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-green-500" />
+              <span className="text-sm text-foreground">Transfer</span>
+            </div>
+            <span className="text-sm font-semibold text-foreground">
+              {formatNaira(transfer)}
             </span>
           </div>
 
