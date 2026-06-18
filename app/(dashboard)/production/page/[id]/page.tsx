@@ -295,13 +295,15 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </dd>
                   </div>
                   {/* Cash Collected & Transfer */}
-                  <div className="mt-6 grid grid-cols-2 gap-3">
+                  <div className="mt-6 grid grid-cols-1 gap-3">
                     <ProductionMoneyInput
                       productionId={id}
                       initialValue={cash}
                       field="cash"
                       label="Cash Collected"
                     />
+                  </div>
+                  <div className="mt-6 grid grid-cols-1 gap-3">
                     <ProductionMoneyInput
                       productionId={id}
                       initialValue={transfer}
