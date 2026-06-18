@@ -6,6 +6,7 @@ import { AuthProvider } from "./providers/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { ServiceWorkerRegister } from "./components/ServiceWorkerRegister";
+import { TopLoader } from "./components/ui/TopLoader";
 
 const rubik = Rubik({
   variable: "--font-rubik",
@@ -57,6 +58,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <TopLoader />
             <Toaster />
             {children}
             <ServiceWorkerRegister />

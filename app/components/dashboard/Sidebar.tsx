@@ -14,6 +14,7 @@ import {
   Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LinkLoader } from "../ui/LinkLoader";
 
 const navigationItems = [
   {
@@ -109,6 +110,7 @@ export const Sidebar = () => {
                         {item.title}
                       </span>
                     )}
+                    <LinkLoader className="absolute right-1.5 top-1.5 size-3" />
                   </Link>
                 </li>
               );

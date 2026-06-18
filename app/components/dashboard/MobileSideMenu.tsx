@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/app/providers/auth-provider";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { LinkLoader } from "../ui/LinkLoader";
 
 const navigationItems = [
   {
@@ -119,6 +120,7 @@ export const MobileSideMenu = ({ children }: MobileSideMenuProps) => {
                       )}
                     />
                     <span className="text-sm font-medium">{item.title}</span>
+                    <LinkLoader className="ml-auto" />
                   </Link>
                 );
               })}
@@ -148,6 +150,7 @@ export const MobileSideMenu = ({ children }: MobileSideMenuProps) => {
                   )}
                 />
                 <span className="text-sm font-medium">Settings</span>
+                <LinkLoader className="ml-auto" />
               </Link>
             </div>
           </nav>
