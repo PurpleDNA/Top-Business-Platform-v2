@@ -14,6 +14,7 @@ export interface Production {
   bread_price: Record<string, number>;
   total: number;
   cash: number;
+  transfer: number;
   created_at: string;
   updated_at: string;
   open: boolean;
@@ -76,6 +77,7 @@ export const createProduction = async (payload: Create) => {
         sold_bread: sold_bread,
         bread_price: payload.bread_price,
         cash: 0,
+        transfer: 0,
         open: true,
       })
       .select();

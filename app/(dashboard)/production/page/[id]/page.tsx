@@ -9,7 +9,7 @@ import {
 import { OutstandingSection } from "@/app/components/productions/OutstandingSection";
 import { ExpenseDropdown } from "@/app/components/productions/ExpenseDropdown";
 import { RemainingBreadDropdown } from "@/app/components/productions/RemainingBreadDropdown";
-import { CashInput } from "@/app/components/productions/CashInput";
+import { ProductionMoneyInput } from "@/app/components/productions/ProductionMoneyInput";
 import { ProductionActions } from "@/app/components/productions/ProductionActions";
 import { getExpensesByProdId } from "@/app/services/expenses";
 import { fetchSalesByProductionId } from "@/app/services/sales";
@@ -67,6 +67,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   }
 
   const { total, cash, created_at, sold_bread } = production;
+  const transfer = production.transfer || 0;
 
   // Defensive fallbacks: bread objects can be null/undefined on legacy or partial rows
   const quantity = production.quantity || {};
@@ -99,9 +100,9 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   );
 
   // Financial calculations
-  // Money we have: cash + expenses + outstanding + remaining bread value
+  // Money we have: cash + transfer + expenses + outstanding + remaining bread value
   const totalMoneyIn =
-    cash + totalExpenses + totalOutstanding + remainingBreadTotal;
+    cash + transfer + totalExpenses + totalOutstanding + remainingBreadTotal;
 
   // Subtract paid outstanding (money that was paid back)
   const adjustedTotal = totalMoneyIn - totalPaidOutstanding;
@@ -293,9 +294,20 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
                       {formatNaira(total)}
                     </dd>
                   </div>
-                  {/* Cash Collected */}
-                  <div className="mt-6">
-                    <CashInput productionId={id} initialCash={cash} />
+                  {/* Cash Collected & Transfer */}
+                  <div className="mt-6 grid grid-cols-2 gap-3">
+                    <ProductionMoneyInput
+                      productionId={id}
+                      initialValue={cash}
+                      field="cash"
+                      label="Cash Collected"
+                    />
+                    <ProductionMoneyInput
+                      productionId={id}
+                      initialValue={transfer}
+                      field="transfer"
+                      label="Transfer"
+                    />
                   </div>
                 </dl>
               </div>
@@ -324,6 +336,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
               {/* Financial Summary */}
               <FinancialSummary
                 cash={cash}
+                transfer={transfer}
                 totalExpenses={totalExpenses}
                 totalOutstanding={totalOutstanding}
                 remainingBreadTotal={remainingBreadTotal}

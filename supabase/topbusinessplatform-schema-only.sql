@@ -4786,6 +4786,7 @@ CREATE TABLE public.productions (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     quantity jsonb DEFAULT '{}'::jsonb NOT NULL,
     cash numeric(10,2) DEFAULT 0 NOT NULL,
+    transfer numeric(10,2) DEFAULT 0 NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     open boolean DEFAULT false,

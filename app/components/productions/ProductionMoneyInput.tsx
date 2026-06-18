@@ -1,21 +1,51 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { updateProduction } from "@/app/services/productions";
+import { updateProduction, Production } from "@/app/services/productions";
 import { useRouter } from "next/navigation";
 import { notify, notifyResult, messages } from "@/lib/notifications";
 import { Loader2 } from "lucide-react";
 import { formatNaira } from "@/app/services/utils";
 
-interface CashInputProps {
+interface ProductionMoneyInputProps {
   productionId: string;
-  initialCash: number;
+  initialValue: number;
+  /** Which production money column this edits. */
+  field: "cash" | "transfer";
+  /** Heading shown above the value (e.g. "Cash Collected"). */
+  label: string;
 }
 
-export const CashInput = ({ productionId, initialCash }: CashInputProps) => {
-  const [cash, setCash] = useState(initialCash);
+// Per-field copy. Kept here (a client component) so the server page never has
+// to import `messages` from notifications.ts (which pulls in client-only sonner).
+const COPY = {
+  cash: {
+    invalid: messages.production.invalidCash,
+    success: messages.production.cashUpdated,
+    fail: messages.production.cashFailed,
+  },
+  transfer: {
+    invalid: messages.production.invalidTransfer,
+    success: messages.production.transferUpdated,
+    fail: messages.production.transferFailed,
+  },
+} as const;
+
+/**
+ * Inline-editable money field for a production (used for both `cash` and
+ * `transfer`). Click to edit, Enter/blur to save, Escape to cancel.
+ */
+export const ProductionMoneyInput = ({
+  productionId,
+  initialValue,
+  field,
+  label,
+}: ProductionMoneyInputProps) => {
+  const { invalid: invalidMessage, success: successMessage, fail: failMessage } =
+    COPY[field];
+  const [value, setValue] = useState(initialValue);
   const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(String(initialCash));
+  const [inputValue, setInputValue] = useState(String(initialValue));
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -30,18 +60,18 @@ export const CashInput = ({ productionId, initialCash }: CashInputProps) => {
   const handleSave = async () => {
     if (isLoading) return;
 
-    const newCash = Number(inputValue);
+    const newValue = Number(inputValue);
 
     // Validate
-    if (isNaN(newCash) || newCash < 0) {
-      notify.error(messages.production.invalidCash);
-      setInputValue(String(cash));
+    if (isNaN(newValue) || newValue < 0) {
+      notify.error(invalidMessage);
+      setInputValue(String(value));
       setIsEditing(false);
       return;
     }
 
     // If no change, just exit editing mode
-    if (newCash === cash) {
+    if (newValue === value) {
       setIsEditing(false);
       return;
     }
@@ -49,17 +79,19 @@ export const CashInput = ({ productionId, initialCash }: CashInputProps) => {
     setIsLoading(true);
 
     try {
-      const result = await updateProduction(productionId, { cash: newCash });
+      const payload: Partial<Production> =
+        field === "cash" ? { cash: newValue } : { transfer: newValue };
+      const result = await updateProduction(productionId, payload);
 
-      if (notifyResult(result, { success: messages.production.cashUpdated, error: messages.production.cashFailed })) {
-        setCash(newCash);
+      if (notifyResult(result, { success: successMessage, error: failMessage })) {
+        setValue(newValue);
         router.refresh();
       } else {
-        setInputValue(String(cash));
+        setInputValue(String(value));
       }
     } catch (error) {
-      notify.fromError(error, messages.production.cashFailed);
-      setInputValue(String(cash));
+      notify.fromError(error, failMessage);
+      setInputValue(String(value));
     } finally {
       setIsLoading(false);
       setIsEditing(false);
@@ -70,14 +102,14 @@ export const CashInput = ({ productionId, initialCash }: CashInputProps) => {
     if (e.key === "Enter") {
       handleSave();
     } else if (e.key === "Escape") {
-      setInputValue(String(cash));
+      setInputValue(String(value));
       setIsEditing(false);
     }
   };
 
   return (
     <div className="rounded-lg bg-green-500/10 ring-1 ring-green-500/20 p-3">
-      <p className="text-xs text-green-400 mb-1">Cash Collected</p>
+      <p className="text-xs text-green-400 mb-1">{label}</p>
       {isEditing ? (
         <div className="relative">
           <input
@@ -99,7 +131,7 @@ export const CashInput = ({ productionId, initialCash }: CashInputProps) => {
           className="text-lg font-semibold text-foreground cursor-pointer hover:text-green-400 transition-colors"
           onClick={() => setIsEditing(true)}
         >
-          {formatNaira(cash)}
+          {formatNaira(value)}
         </p>
       )}
     </div>

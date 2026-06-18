@@ -57,6 +57,7 @@ export const EditProductionModal = ({
       ).toString();
     });
     data.cash = production.cash.toString();
+    data.transfer = (production.transfer || 0).toString();
     return data;
   }, [multipliers, production]);
 
@@ -110,6 +111,7 @@ export const EditProductionModal = ({
         quantity,
         old_bread,
         cash: Number(formData.cash),
+        transfer: Number(formData.transfer),
       };
 
       const result = await updateProduction(production.id, payload);
@@ -131,7 +133,8 @@ export const EditProductionModal = ({
         <DialogHeader>
           <DialogTitle>Edit Production</DialogTitle>
           <DialogDescription>
-            Update production quantities, old bread, and cash collected.
+            Update production quantities, old bread, cash collected, and
+            transfer.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -201,18 +204,32 @@ export const EditProductionModal = ({
               </div>
             </div>
 
-            {/* Cash Section */}
-            <div className="grid gap-2">
-              <Label htmlFor="cash">Cash Collected (₦)</Label>
-              <Input
-                id="cash"
-                type="number"
-                value={formData.cash}
-                onChange={(e) => handleFieldChange("cash", e.target.value)}
-                required
-                min="0"
-                step="0.01"
-              />
+            {/* Cash & Transfer Section */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="cash">Cash Collected (₦)</Label>
+                <Input
+                  id="cash"
+                  type="number"
+                  value={formData.cash}
+                  onChange={(e) => handleFieldChange("cash", e.target.value)}
+                  required
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="transfer">Transfer (₦)</Label>
+                <Input
+                  id="transfer"
+                  type="number"
+                  value={formData.transfer}
+                  onChange={(e) => handleFieldChange("transfer", e.target.value)}
+                  required
+                  min="0"
+                  step="0.01"
+                />
+              </div>
             </div>
           </div>
           <DialogFooter className="flex-row ">
