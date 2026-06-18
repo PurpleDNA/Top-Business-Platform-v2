@@ -87,7 +87,7 @@ export const fetchFilteredSales = async (
   customerId?: string | null,
   productionId?: string | null,
   startDate?: string | null,
-  endDate?: string | null
+  endDate?: string | null,
 ): Promise<FilteredSale[]> => {
   const offset = (page - 1) * limit;
 
@@ -156,7 +156,7 @@ export const fetchAllSalesWithDetails = async (page: number, limit: number) => {
           id,
           created_at
         )
-      `
+      `,
       )
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
@@ -221,7 +221,7 @@ export const fetchSalesByProductionId = cache(async (productionId: string) => {
           id,
           name
         )
-      `
+      `,
       )
       .eq("production_id", productionId)
       .order("created_at", { ascending: false });
@@ -241,7 +241,7 @@ export const fetchSalesByProductionId = cache(async (productionId: string) => {
  * Replaces: createNewSale + addPayment + updateSoldBread
  */
 export const createSaleWithPaymentAndInventory = async (
-  payload: CreateSale
+  payload: CreateSale,
 ) => {
   try {
     const supabase = await createClient();
@@ -255,7 +255,7 @@ export const createSaleWithPaymentAndInventory = async (
         p_amount_paid: Number(payload.amount_paid) || 0,
         p_quantity_bought: payload.quantity || {},
         p_outstanding: payload.remaining,
-      }
+      },
     );
 
     if (error) {
@@ -273,8 +273,17 @@ export const createSaleWithPaymentAndInventory = async (
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "", data };
-  } catch {
-    throw new Error("Unexpected Error Occured");
+  } catch (error) {
+    // Surface the real DB / RLS message (e.g. "Production is closed") as a
+    // returned result rather than re-throwing. Throwing out of a server action
+    // gets its message stripped in production builds; returning it does not.
+    const errorMsg = String(error);
+    const parts = errorMsg.split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      data: null,
+    };
   }
 };
 

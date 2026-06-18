@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import z from "zod";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 
 const validateCreate = z
   .object({
@@ -72,7 +72,7 @@ const CustomerCreateForm = () => {
           debtAmount: "",
         });
       } else {
-        notify.error(messages.customer.createFailed);
+        notify.error(getErrorMessage(response.error, messages.customer.createFailed));
       }
       return response;
     } catch (error) {

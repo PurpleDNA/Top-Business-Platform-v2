@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import z from "zod";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 import { formatDateTime, getTimeFrame } from "@/app/services/utils";
 import {
   Production,
@@ -105,8 +105,10 @@ const ExpenseCreateForm = () => {
           expense: "",
           amount: "",
         });
-        return response;
+      } else {
+        notify.error(getErrorMessage(response.error, messages.expense.createFailed));
       }
+      return response;
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { EditBreadPriceModal } from "./EditBreadPriceModal";
 import { DeleteBreadPriceDialog } from "./DeleteBreadPriceDialog";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 
 interface Props {
   id: number;
@@ -30,14 +30,15 @@ export const BreadPriceCard = ({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDeleteConfirm = async () => {
-    try {
-      await deleteBreadPrice(id);
-      notify.success(messages.breadPrice.deleted);
-      onDelete(id);
-    } catch (error) {
-      notify.fromError(error, messages.breadPrice.deleteFailed);
-      throw error;
+    const result = await deleteBreadPrice(id);
+    if (result.status !== "SUCCESS") {
+      const message = getErrorMessage(result.error, messages.breadPrice.deleteFailed);
+      notify.error(message);
+      // Re-throw so the confirm dialog knows the deletion failed.
+      throw new Error(message);
     }
+    notify.success(messages.breadPrice.deleted);
+    onDelete(id);
   };
 
   return (

@@ -3,7 +3,7 @@
 import React, { useActionState, useState, useMemo } from "react";
 import { createProduction } from "@/app/services/productions";
 import z from "zod";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -131,7 +131,7 @@ const ProductionFrom = ({ multipliers }: Props) => {
         });
         setShowOldBread(false);
       } else {
-        notify.error(messages.production.createFailed);
+        notify.error(getErrorMessage(response.error, messages.production.createFailed));
       }
       return response;
     } catch (error) {

@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoaderCircle } from "lucide-react";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 
 interface Props {
   open: boolean;
@@ -65,6 +65,11 @@ export const AddBreadPriceModal = ({ open, onOpenChange, onSuccess }: Props) => 
         color: formData.color,
         price: Number(formData.price),
       });
+
+      if (result.status !== "SUCCESS") {
+        notify.error(getErrorMessage(result.error, messages.breadPrice.addFailed));
+        return;
+      }
 
       notify.success(messages.breadPrice.added);
       onSuccess(result.data);

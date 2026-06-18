@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AppWindow, LoaderCircle, X } from "lucide-react";
 import z from "zod";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -78,6 +78,8 @@ export const ExpenseModal = ({ productionId }: ExpenseModalProps) => {
         });
         setOpen(false);
         router.refresh();
+      } else {
+        notify.error(getErrorMessage(response.error, messages.expense.createFailed));
       }
     } catch (error) {
       if (error instanceof z.ZodError) {

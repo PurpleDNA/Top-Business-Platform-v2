@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { LoaderCircle, UserRoundX } from "lucide-react";
 import z from "zod";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 import { formatDateTime, getTimeFrame } from "@/app/services/utils";
 import { Production } from "@/app/services/productions";
 import { getBreadPriceMultipliers } from "@/app/services/bread_price";
@@ -203,7 +203,7 @@ const SalesCreateForm = ({ productions, customer, production }: Props) => {
       const response = await createSaleWithPaymentAndInventory(payload);
 
       if (response.status !== "SUCCESS") {
-        notify.error(messages.sale.createFailed);
+        notify.error(getErrorMessage(response.error, messages.sale.createFailed));
         return response;
       }
 
