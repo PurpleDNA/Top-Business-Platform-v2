@@ -81,7 +81,7 @@ export const createProduction = async (payload: Create) => {
       .select();
 
     if (error) {
-      throw new Error("Create Production Error");
+      throw new Error(error.message);
     }
 
     revalidatePath("/production/all");
@@ -92,7 +92,12 @@ export const createProduction = async (payload: Create) => {
 
     return { status: "SUCCESS", error: "", res: ProductionData[0] };
   } catch (error) {
-    throw new Error(String(error));
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      res: null,
+    };
   }
 };
 
@@ -348,7 +353,7 @@ export const updateProduction = async (
       .select();
 
     if (error) {
-      throw new Error("Failed to update production");
+      throw new Error(error.message);
     }
     revalidatePath("/productions/all");
     updateTag("productions");
@@ -426,7 +431,7 @@ export const deleteProduction = async (productionId: string) => {
       .eq("id", productionId);
 
     if (error) {
-      throw new Error("Delete Production Error");
+      throw new Error(error.message);
     }
     revalidatePath("/productions/all");
     updateTag("productions");
@@ -437,7 +442,11 @@ export const deleteProduction = async (productionId: string) => {
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "" };
-  } catch {
-    throw new Error("Unexpected Error Occured");
+  } catch (error) {
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+    };
   }
 };

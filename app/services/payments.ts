@@ -218,8 +218,13 @@ export const createPaymentForSale = async (
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "", data };
-  } catch {
-    throw new Error("Unexpected Error Occured");
+  } catch (error) {
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      data: null,
+    };
   }
 };
 

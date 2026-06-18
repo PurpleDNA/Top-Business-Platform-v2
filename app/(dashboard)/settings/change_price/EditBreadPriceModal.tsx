@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoaderCircle } from "lucide-react";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 
 interface Props {
   open: boolean;
@@ -70,6 +70,11 @@ export const EditBreadPriceModal = ({
       const result = await updateBreadPrice(id, {
         price: Number(formData.color),
       });
+
+      if (result.status !== "SUCCESS") {
+        notify.error(getErrorMessage(result.error, messages.breadPrice.updateFailed));
+        return;
+      }
 
       notify.success(messages.breadPrice.updated);
       onSuccess(result.data);

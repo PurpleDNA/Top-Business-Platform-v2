@@ -136,8 +136,13 @@ export const createCustomer = async (payload: Create) => {
     await revalidateAllPaths();
 
     return { status: "SUCCESS", error: "", res: customerData[0] };
-  } catch {
-    throw new Error("Unexpected Error Occured");
+  } catch (error) {
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      res: null,
+    };
   }
 };
 
@@ -181,8 +186,13 @@ export const updateCustomer = async (
     revalidateTag("customers", {});
     await revalidateAllPaths();
     return { status: "SUCCESS", error: "", res: UpdatedData };
-  } catch {
-    throw new Error("Unexpected Error Occured");
+  } catch (error) {
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      res: null,
+    };
   }
 };
 
@@ -195,14 +205,18 @@ export const deleteCustomer = async (customerId: string) => {
       .eq("id", customerId);
 
     if (error) {
-      throw new Error("Delete Customer Error");
+      throw new Error(error.message);
     }
     revalidatePath("/customers/all");
     revalidateTag("customers", {});
     revalidateTag("customers_count", {});
     await revalidateAllPaths();
     return { status: "SUCCESS", error: "" };
-  } catch {
-    throw new Error("Unexpected Error Occured");
+  } catch (error) {
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+    };
   }
 };

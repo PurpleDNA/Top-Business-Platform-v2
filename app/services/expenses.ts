@@ -33,7 +33,7 @@ export const createExpense = async (payload: CreateExpense) => {
       .select();
 
     if (error) {
-      throw new Error("Failed to create expense");
+      throw new Error(error.message);
     }
 
     revalidateTag("expenses", {});
@@ -41,7 +41,12 @@ export const createExpense = async (payload: CreateExpense) => {
 
     return { status: "SUCCESS", error: "", data: expenseData[0] };
   } catch (error) {
-    throw new Error(String(error));
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      data: null,
+    };
   }
 };
 
@@ -79,7 +84,7 @@ export const updateExpense = async (
       .select();
 
     if (error) {
-      throw new Error("Failed to update expense");
+      throw new Error(error.message);
     }
 
     revalidateTag("expenses", {});
@@ -87,7 +92,12 @@ export const updateExpense = async (
 
     return { status: "SUCCESS", error: "", data: updatedExpense[0] };
   } catch (error) {
-    throw new Error(String(error));
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      data: null,
+    };
   }
 };
 
@@ -121,7 +131,7 @@ export const deleteExpense = async (expenseId: string) => {
       .eq("id", expenseId);
 
     if (error) {
-      throw new Error("Failed to delete expense");
+      throw new Error(error.message);
     }
 
     revalidateTag("expenses", {});
@@ -129,7 +139,11 @@ export const deleteExpense = async (expenseId: string) => {
 
     return { status: "SUCCESS", error: "" };
   } catch (error) {
-    throw new Error(String(error));
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+    };
   }
 };
 

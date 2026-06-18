@@ -87,7 +87,7 @@ export const createBreadPrice = async (payload: CreateBreadPrice) => {
       .select();
 
     if (error) {
-      throw new Error("Failed to create bread price");
+      throw new Error(error.message);
     }
 
     revalidateTag("bread_prices", {});
@@ -95,7 +95,12 @@ export const createBreadPrice = async (payload: CreateBreadPrice) => {
 
     return { status: "SUCCESS", error: "", data: breadPriceData[0] };
   } catch (error) {
-    throw new Error(String(error));
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      data: null,
+    };
   }
 };
 
@@ -120,7 +125,7 @@ export const updateBreadPrice = async (
       .select();
 
     if (error) {
-      throw new Error("Failed to update bread price");
+      throw new Error(error.message);
     }
 
     revalidateTag("bread_prices", {});
@@ -128,7 +133,12 @@ export const updateBreadPrice = async (
 
     return { status: "SUCCESS", error: "", data: updatedBreadPrice[0] };
   } catch (error) {
-    throw new Error(String(error));
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+      data: null,
+    };
   }
 };
 
@@ -149,7 +159,7 @@ export const deleteBreadPrice = async (breadPriceId: number) => {
       .eq("id", breadPriceId);
 
     if (error) {
-      throw new Error("Failed to delete bread price");
+      throw new Error(error.message);
     }
 
     revalidateTag("bread_prices", {});
@@ -157,7 +167,11 @@ export const deleteBreadPrice = async (breadPriceId: number) => {
 
     return { status: "SUCCESS", error: "" };
   } catch (error) {
-    throw new Error(String(error));
+    const parts = String(error).split(":");
+    return {
+      status: "ERROR",
+      error: parts[parts.length - 1].trim(),
+    };
   }
 };
 

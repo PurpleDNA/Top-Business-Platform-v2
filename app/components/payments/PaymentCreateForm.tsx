@@ -3,7 +3,7 @@
 "use client";
 import { Customer, searchCustomers } from "@/app/services/customers";
 import React, { useActionState, useEffect, useState } from "react";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 import z from "zod";
 import {
   distributePaymentAcrossSales,
@@ -224,7 +224,9 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
           });
           return result;
         } else {
-          notify.error(result.error);
+          notify.error(
+            getErrorMessage(result.error, messages.payment.distributeFailed),
+          );
           return result;
         }
       } else {
@@ -237,7 +239,9 @@ const PaymentCreateForm = ({ customer, latestProd }: Props) => {
         );
 
         if (response.status !== "SUCCESS") {
-          notify.error(messages.payment.createFailed);
+          notify.error(
+            getErrorMessage(response.error, messages.payment.createFailed),
+          );
           return response;
         }
 

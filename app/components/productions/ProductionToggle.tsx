@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { toggleProdStatus } from "@/app/services/productions";
 import { useRouter } from "next/navigation";
-import { notify, messages } from "@/lib/notifications";
+import { notify, messages, getErrorMessage } from "@/lib/notifications";
 import { Lock, LockOpen, Loader2 } from "lucide-react";
 
 interface ProductionToggleProps {
@@ -44,7 +44,7 @@ export const ProductionToggle = ({
           router.refresh();
         });
       } else {
-        notify.error(messages.production.statusFailed);
+        notify.error(getErrorMessage(result.error, messages.production.statusFailed));
       }
     } catch (error) {
       notify.fromError(error, messages.production.statusFailed);
