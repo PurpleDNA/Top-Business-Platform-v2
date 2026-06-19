@@ -1,13 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { LogIn, Eye, EyeOff } from "lucide-react";
+import { LogIn, Eye, EyeOff, Copy, Check, Info } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useRouter } from "next/navigation";
 import { notify, messages } from "@/lib/notifications";
 import { LoaderCircle } from "lucide-react";
+
+// Demo credentials are surfaced on the login page ONLY when these public env
+// vars are present. The real business deployment leaves them unset, so the
+// demo card never renders there — it shows up only in the portfolio copy.
+const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL;
+const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
+const SHOW_DEMO = Boolean(DEMO_EMAIL && DEMO_PASSWORD);
 
 const LoginForm = ({ user }: { user: any }) => {
   const {
@@ -23,8 +30,24 @@ const LoginForm = ({ user }: { user: any }) => {
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [copied, setCopied] = useState<"email" | "password" | null>(null);
 
   const router = useRouter();
+
+  const fillDemo = () => {
+    setPayload({ email: DEMO_EMAIL ?? "", password: DEMO_PASSWORD ?? "" });
+    setShowPassword(true);
+  };
+
+  const copy = async (field: "email" | "password", value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(field);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      // clipboard may be unavailable (e.g. non-secure context); ignore
+    }
+  };
 
   const handleForgot = () => {
     router.push("/forgot-password");
@@ -68,6 +91,64 @@ const LoginForm = ({ user }: { user: any }) => {
       <div className="flex flex-col items-center gap-2 mb-8">
         <h3 className="text-2xl font-bold text-foreground">Login to Admin</h3>
       </div>
+
+      {SHOW_DEMO && (
+        <div className="mb-6 rounded-lg border border-primary/30 bg-primary/5 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Info size={16} className="text-primary shrink-0" />
+            <p className="text-sm font-semibold text-foreground">
+              Portfolio demo
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            This is a live demo of a real business platform. Use the credentials
+            below to explore — or just hit the button to fill them in.
+          </p>
+
+          <div className="flex flex-col gap-2 mb-3">
+            {(
+              [
+                ["Email", DEMO_EMAIL ?? "", "email"],
+                ["Password", DEMO_PASSWORD ?? "", "password"],
+              ] as const
+            ).map(([label, value, field]) => (
+              <div
+                key={field}
+                className="flex items-center justify-between gap-2 rounded-md border border-border bg-background px-3 py-2"
+              >
+                <div className="min-w-0">
+                  <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
+                    {label}
+                  </span>
+                  <span className="block truncate font-mono text-sm text-foreground">
+                    {value}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copy(field, value)}
+                  aria-label={`Copy ${label.toLowerCase()}`}
+                  className="shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  {copied === field ? (
+                    <Check size={16} className="text-green-600" />
+                  ) : (
+                    <Copy size={16} />
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={fillDemo}
+            className="w-full rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition cursor-pointer"
+          >
+            Use demo credentials
+          </button>
+        </div>
+      )}
 
       {/* <button
         type="button"
